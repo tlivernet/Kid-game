@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1b1140">
+<title>La Planète des Prouts — j'apprends les lettres</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💩</text></svg>">
+</head>
+<body>
+
+<!-- ============ ÉCRAN DE DÉMARRAGE (débloque le son) ============ -->
+<div id="screen-start" class="screen active start-screen">
+  <div class="start-planet">💩</div>
+  <h1 class="start-title">La Planète<br>des Prouts</h1>
+  <button id="btn-go" class="big-go">▶ JOUER</button>
+  <p class="start-hint">🔊 Monte le son&nbsp;!</p>
+</div>
+
+<!-- ============ MENU ============ -->
+<div id="screen-menu" class="screen">
+  <header class="topbar">
+    <div class="score-pill" id="score-pill">
+      <span class="score-ico">⭐</span><span id="score-stars">0</span>
+      <span class="score-ico">💩</span><span id="score-proutons">0</span>
+    </div>
+    <button class="icon-btn" id="btn-reset" title="Tout effacer">🧹</button>
+  </header>
+
+  <div class="menu-grid" id="menu-grid"><!-- rempli par core.js --></div>
+</div>
+
+<!-- ============ JEU (conteneur générique) ============ -->
+<div id="screen-game" class="screen">
+  <header class="topbar">
+    <button class="icon-btn" id="btn-home">🏠</button>
+    <div class="progress-dots" id="progress-dots"></div>
+    <button class="icon-btn" id="btn-repeat">🔁</button>
+  </header>
+  <div id="game-root" class="game-root"></div>
+</div>
+
+<!-- ============ RÉCOMPENSE FIN DE PARTIE ============ -->
+<div id="screen-win" class="screen win-screen">
+  <div class="win-emoji" id="win-emoji">🏆</div>
+  <div class="win-stars" id="win-stars"></div>
+  <div class="win-text" id="win-text">BRAVO&nbsp;!</div>
+  <div class="win-btns">
+    <button class="pill-btn" id="btn-again">🔁 Encore&nbsp;!</button>
+    <button class="pill-btn ghost" id="btn-win-home">🏠</button>
+  </div>
+</div>
+
+<!-- Bouton prout universel : toujours accessible, c'est la soupape ! -->
+<button id="btn-prout" class="prout-btn" aria-label="Prout">💩</button>
+
+<div id="confetti-layer" class="confetti-layer"></div>
+
+<script src="js/audio.js"></script>
+<script src="js/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/games/dictee.js"></script>
+<script src="js/games/ballons.js"></script>
+<script src="js/games/jumeaux.js"></script>
+<script src="js/games/pendu.js"></script>
+<script src="js/games/compte.js"></script>
+<script src="js/games/tableau.js"></script>
+<script src="js/games/prouts.js"></script>
+<script src="js/boot.js"></script>
+</body>
+</html>

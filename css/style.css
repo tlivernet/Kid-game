@@ -1,0 +1,337 @@
+/* ==========================================================================
+   La Planète des Prouts — feuille de style (tablette d'abord)
+   Gros boutons, couleurs franches, zéro texte indispensable.
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%; margin: 0; padding: 0;
+  overflow: hidden;
+  background: #150c33;
+  color: #fff;
+  font-family: "Baloo 2", "Comic Sans MS", "Trebuchet MS", system-ui, sans-serif;
+  -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+body::before {           /* ciel étoilé animé */
+  content: ''; position: fixed; inset: -20%;
+  background:
+    radial-gradient(2px 2px at 20% 30%, #fff9 40%, transparent 41%),
+    radial-gradient(2px 2px at 70% 20%, #fff7 40%, transparent 41%),
+    radial-gradient(3px 3px at 45% 70%, #fff6 40%, transparent 41%),
+    radial-gradient(2px 2px at 85% 60%, #fff8 40%, transparent 41%),
+    radial-gradient(2px 2px at 10% 80%, #fff6 40%, transparent 41%),
+    radial-gradient(circle at 50% 0%, #3a1f7a 0%, #150c33 60%, #0b0620 100%);
+  animation: drift 26s linear infinite alternate;
+  z-index: -1;
+}
+@keyframes drift { to { transform: translate3d(-3%, -3%, 0) scale(1.06); } }
+
+.screen { position: fixed; inset: 0; display: none; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* ---------------- écran de démarrage ---------------- */
+.start-screen { align-items: center; justify-content: center; gap: 2vmin; }
+.start-planet { font-size: 26vmin; animation: float 3s ease-in-out infinite; filter: drop-shadow(0 10px 30px #0008); }
+@keyframes float { 50% { transform: translateY(-3vmin) rotate(-6deg); } }
+.start-title {
+  font-size: 9vmin; line-height: 1.05; margin: 0; text-align: center;
+  text-shadow: 0 0 24px #ff59d6, 0 6px 0 #7a1f6a;
+  color: #ffe97a;
+}
+.big-go {
+  margin-top: 3vmin; padding: 2.4vmin 8vmin;
+  font-size: 7vmin; font-weight: 800; font-family: inherit;
+  border: none; border-radius: 999px; color: #2b0a3d;
+  background: linear-gradient(180deg, #ffe97a, #ffb02e);
+  box-shadow: 0 1.2vmin 0 #b06a00, 0 0 40px #ffb02e88;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.big-go:active { transform: translateY(0.8vmin); box-shadow: 0 0.4vmin 0 #b06a00; }
+@keyframes pulse { 50% { transform: scale(1.05); } }
+.start-hint { opacity: .75; font-size: 3.4vmin; }
+
+/* ---------------- barre du haut ---------------- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 2vmin; padding: 1.4vmin 2.4vmin;
+  padding-top: max(1.4vmin, env(safe-area-inset-top));
+}
+.icon-btn {
+  font-size: 5.4vmin; line-height: 1;
+  width: 11vmin; height: 11vmin; flex: 0 0 auto;
+  border: none; border-radius: 50%;
+  background: #ffffff1f; color: #fff;
+  box-shadow: inset 0 -0.6vmin 0 #0003;
+}
+.icon-btn:active { transform: scale(.92); }
+.icon-btn.holding { background: #ff4d6d; animation: pulse .5s infinite; }
+
+.score-pill {
+  display: flex; align-items: center; gap: 1.2vmin;
+  background: #00000040; border-radius: 999px;
+  padding: 1vmin 3vmin; font-size: 4.2vmin; font-weight: 800;
+}
+.score-ico { font-size: 4.6vmin; }
+
+.progress-dots { display: flex; gap: 1.2vmin; flex-wrap: wrap; justify-content: center; }
+.dot {
+  width: 2.6vmin; height: 2.6vmin; border-radius: 50%;
+  background: #ffffff2e; transition: transform .2s, background .2s;
+}
+.dot.on { background: #ffe97a; transform: scale(1.25); box-shadow: 0 0 12px #ffe97a; }
+
+/* ---------------- menu ---------------- */
+.menu-grid {
+  flex: 1; display: grid; gap: 2.4vmin;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 1vmin 3vmin 3vmin;
+  align-content: center;
+  overflow-y: auto;
+}
+@media (orientation: portrait) { .menu-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.game-card {
+  border: none; border-radius: 4vmin; color: #fff; font-family: inherit;
+  padding: 2.5vmin 1.5vmin;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.8vmin;
+  box-shadow: 0 1.4vmin 0 #0006, inset 0 0.8vmin 0 #ffffff33;
+  min-height: 26vmin;
+}
+.game-card:active { transform: translateY(1vmin) scale(.98); box-shadow: 0 0.4vmin 0 #0006; }
+.card-emoji { font-size: 11vmin; line-height: 1; filter: drop-shadow(0 4px 8px #0006); }
+.card-title { font-size: 3.4vmin; font-weight: 800; text-shadow: 0 2px 4px #0007; }
+.card-lvl { font-size: 2.4vmin; letter-spacing: .3vmin; opacity: .95; min-height: 3vmin; }
+
+/* ---------------- conteneur de jeu ---------------- */
+.game-root {
+  flex: 1; display: flex; flex-direction: column;
+  padding: 0 2.5vmin 2.5vmin; gap: 1.5vmin; overflow: hidden; min-height: 0;
+}
+
+/* ---------------- Dictée magique ---------------- */
+.dictee-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2vmin; min-height: 0; }
+.ear-box { display: flex; justify-content: center; }
+.ear {
+  font-size: 12vmin; width: 20vmin; height: 20vmin; border-radius: 50%;
+  border: none; background: radial-gradient(circle at 40% 30%, #fff4, #ffffff1a);
+  box-shadow: 0 0 0 1vmin #ffffff17, 0 1vmin 2vmin #0005;
+  animation: pulse 2s ease-in-out infinite;
+}
+.ear:active { transform: scale(.9); }
+.hint { font-size: 4vmin; font-weight: 800; color: #ffe97a; min-height: 6vmin; text-align: center; }
+
+.choices {
+  display: flex; flex-wrap: wrap; gap: 2vmin;
+  align-items: center; justify-content: center; width: 100%;
+}
+.letter-btn {
+  font-family: inherit; font-weight: 900; border: none; color: #fff;
+  width: 22vmin; height: 22vmin; font-size: 13vmin; line-height: 1;
+  border-radius: 3.5vmin;
+  background: linear-gradient(180deg, hsl(var(--hue,280) 85% 62%), hsl(var(--hue,280) 85% 40%));
+  box-shadow: 0 1.2vmin 0 hsl(var(--hue,280) 80% 28%), inset 0 0.6vmin 0 #ffffff3d;
+  text-shadow: 0 0.5vmin 0 #0004;
+  transition: transform .1s;
+}
+.choices.c6 .letter-btn, .choices.c5 .letter-btn { width: 18vmin; height: 18vmin; font-size: 10vmin; }
+.letter-btn:active { transform: translateY(1vmin) scale(.97); }
+.letter-btn.ok { animation: popok .5s ease; background: linear-gradient(180deg,#7cff9b,#12a544); box-shadow: 0 1.2vmin 0 #0a7c33; }
+.letter-btn.ko { opacity: .45; }
+.letter-btn.helped { animation: hop .6s ease infinite; box-shadow: 0 0 3vmin 1vmin #ffe97a; }
+.letter-btn.num { font-size: 11vmin; }
+@keyframes popok { 40% { transform: scale(1.25) rotate(-6deg); } }
+@keyframes hop { 50% { transform: translateY(-2vmin); } }
+
+/* ---------------- Attrape-ballons ---------------- */
+.ball-hud {
+  display: flex; align-items: center; justify-content: center; gap: 2vmin;
+  background: #00000038; border-radius: 3vmin; padding: 1vmin 3vmin;
+}
+.hud-lbl { font-size: 3.6vmin; font-weight: 800; opacity: .9; }
+.hud-letter { font-size: 8vmin; font-weight: 900; color: #ffe97a; text-shadow: 0 0 3vmin #ffb02e; line-height: 1; }
+.hud-letter.small { font-size: 6vmin; opacity: .85; }
+.ball-zone { position: relative; flex: 1; overflow: hidden; border-radius: 3vmin; background: #ffffff0a; min-height: 0; }
+.balloon {
+  position: absolute; top: 0; left: 0; will-change: transform;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50% 50% 48% 48% / 42% 42% 58% 58%;
+  background: radial-gradient(circle at 34% 28%, #fff9, hsl(var(--hue,10) 85% 55%) 45%, hsl(var(--hue,10) 85% 38%));
+  box-shadow: inset -1vmin -1.5vmin 2vmin #0004;
+}
+.balloon::after {
+  content: ''; position: absolute; bottom: -1.6vmin; left: 50%;
+  width: 0.8vmin; height: 2.4vmin; transform: translateX(-50%);
+  background: #ffffff8c; border-radius: 0 0 40% 40%;
+}
+.balloon .bl { font-size: 9vmin; font-weight: 900; color: #fff; text-shadow: 0 0.4vmin 0.6vmin #0006; }
+.burst { position: absolute; font-size: 12vmin; transform: translate(-50%,-50%); animation: burst .65s ease-out forwards; pointer-events: none; }
+@keyframes burst { to { transform: translate(-50%,-50%) scale(2.2); opacity: 0; } }
+
+/* ---------------- Les jumeaux (memory) ---------------- */
+.mem-grid {
+  flex: 1; display: grid; gap: 1.8vmin; min-height: 0;
+  grid-template-columns: repeat(var(--cols, 4), 1fr);
+  grid-template-rows: repeat(var(--rows, 2), minmax(0, 1fr));
+  justify-content: center;
+}
+.mem-card { position: relative; perspective: 800px; min-height: 0; }
+.mc-inner {
+  position: relative; width: 100%; height: 100%;
+  transition: transform .38s; transform-style: preserve-3d;
+}
+.mem-card.flipped .mc-inner, .mem-card.matched .mc-inner { transform: rotateY(180deg); }
+.mc-back, .mc-face {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 3vmin; font-size: 11vmin; font-weight: 900;
+  box-shadow: 0 1vmin 0 #0005, inset 0 0.6vmin 0 #ffffff33;
+}
+.mc-back { background: linear-gradient(180deg, #6a4bd6, #3a1f96); }
+.mc-face { transform: rotateY(180deg); background: linear-gradient(180deg, #fff2c4, #ffcf5c); color: #4a2400; }
+.mc-face.min { background: linear-gradient(180deg, #c9f6ff, #6ac6f0); color: #06344a; }
+.mem-card.matched { animation: popok .5s ease; }
+.mem-card.matched .mc-face { box-shadow: 0 0 3vmin 0.6vmin #7cff9b; }
+
+/* ---------------- Le Prout-du (pendu) ---------------- */
+.pendu-top { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6vmin; min-height: 0; }
+.pendu-word, .pendu-keys { flex: 0 0 auto; }
+.pendu-keys { padding-bottom: 2vmin; }
+.pendu-guy { font-size: 14vmin; line-height: 1; transition: font-size .3s ease; }
+.pendu-img { font-size: 14vmin; line-height: 1; opacity: .95; }
+.pendu-word { display: flex; gap: 1.4vmin; justify-content: center; flex-wrap: wrap; }
+.slot {
+  width: 9vmin; height: 12vmin; border-radius: 1.6vmin;
+  background: #ffffff14; border-bottom: 0.9vmin solid #ffe97a;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8vmin; font-weight: 900; color: #ffe97a;
+}
+.slot.found { background: #ffe97a; color: #3a1f00; animation: popok .4s ease; }
+.pendu-keys { display: flex; flex-wrap: wrap; gap: 1.4vmin; justify-content: center; }
+.key {
+  font-family: inherit; font-weight: 900; font-size: 6vmin; color: #2b0a3d;
+  width: 12vmin; height: 12vmin; border: none; border-radius: 2.4vmin;
+  background: linear-gradient(180deg, #ffffff, #cfc7e8);
+  box-shadow: 0 1vmin 0 #6b5ba3;
+}
+.key:active { transform: translateY(0.8vmin); box-shadow: 0 0.2vmin 0 #6b5ba3; }
+.key.ok { background: linear-gradient(180deg,#7cff9b,#12a544); color: #fff; box-shadow: 0 1vmin 0 #0a7c33; }
+.key.ko { opacity: .3; }
+
+/* ---------------- Compte les zigotos ---------------- */
+.compte-zone {
+  flex: 1; display: flex; flex-wrap: wrap; gap: 1.5vmin;
+  align-items: center; justify-content: center; align-content: center;
+  background: #ffffff0d; border-radius: 3vmin; padding: 2vmin; min-height: 0;
+}
+.zigoto {
+  font-size: 11vmin; line-height: 1; display: inline-block;
+  transform: rotate(var(--rot, 0deg));
+  animation: drop .45s ease backwards;
+}
+@keyframes drop { from { transform: translateY(-8vmin) scale(.5); opacity: 0; } }
+.zigoto.counted { animation: countpop .5s ease; filter: drop-shadow(0 0 2vmin #ffe97a); }
+@keyframes countpop { 50% { transform: scale(1.5) rotate(10deg); } }
+
+/* ---------------- Tableau magique ---------------- */
+.tab-wrap { position: relative; flex: 1; min-height: 0; border-radius: 3vmin; background: #ffffff0d; overflow: hidden; }
+.tab-wrap canvas { position: absolute; inset: 0; touch-action: none; }
+#t-ink { z-index: 2; }
+.tab-target {
+  position: absolute; top: 1.5vmin; left: 2.5vmin; z-index: 3;
+  font-size: 9vmin; font-weight: 900; color: #ffffff2e;
+}
+.tab-clear {
+  position: absolute; right: 2vmin; bottom: 2vmin; z-index: 4;
+  width: 13vmin; height: 13vmin; border-radius: 50%; border: none;
+  font-size: 6vmin; background: #ffffff26; color: #fff;
+  box-shadow: inset 0 -0.6vmin 0 #0003;
+}
+.tab-clear:active { transform: scale(.9); }
+
+/* ---------------- Boîte à prouts ---------------- */
+.sb-title { text-align: center; font-size: 5vmin; font-weight: 900; color: #ffe97a; }
+.soundboard {
+  flex: 1; display: grid; gap: 2vmin; min-height: 0; overflow-y: auto;
+  grid-template-columns: repeat(auto-fit, minmax(24vmin, 1fr));
+  align-content: center;
+}
+.sb-btn {
+  border: none; border-radius: 3vmin; font-family: inherit; color: #fff;
+  padding: 2vmin 1vmin; display: flex; flex-direction: column; align-items: center; gap: .6vmin;
+  background: linear-gradient(180deg, #8b5a2b, #5d3a1c);
+  box-shadow: 0 1.2vmin 0 #3a2410, inset 0 0.6vmin 0 #ffffff2e;
+}
+.sb-btn.locked { background: linear-gradient(180deg,#4a4560,#2c2940); opacity: .8; }
+.sb-emoji { font-size: 9vmin; line-height: 1; }
+.sb-name { font-size: 2.6vmin; font-weight: 800; }
+.sb-btn.pressed { animation: squish .35s ease; }
+@keyframes squish { 40% { transform: translateY(1.2vmin) scaleY(.85) scaleX(1.1); } }
+
+/* ---------------- écran de victoire ---------------- */
+.win-screen { align-items: center; justify-content: center; gap: 2vmin; }
+.win-emoji { font-size: 26vmin; animation: winpop .7s ease; }
+@keyframes winpop { 0% { transform: scale(0) rotate(-90deg); } 60% { transform: scale(1.25) rotate(8deg); } }
+.win-stars { display: flex; gap: 2vmin; }
+.wstar { font-size: 12vmin; filter: grayscale(1); opacity: .3; }
+.wstar.on { filter: none; opacity: 1; animation: winpop .6s ease backwards; }
+.win-text { font-size: 8vmin; font-weight: 900; color: #ffe97a; text-shadow: 0 0 3vmin #ff59d6; }
+.win-btns { display: flex; gap: 3vmin; margin-top: 2vmin; }
+.pill-btn {
+  font-family: inherit; font-size: 5vmin; font-weight: 900; color: #2b0a3d;
+  border: none; border-radius: 999px; padding: 2vmin 6vmin;
+  background: linear-gradient(180deg, #ffe97a, #ffb02e);
+  box-shadow: 0 1.2vmin 0 #b06a00;
+}
+.pill-btn.ghost { background: #ffffff26; color: #fff; box-shadow: 0 1.2vmin 0 #0005; }
+.pill-btn:active { transform: translateY(0.8vmin); box-shadow: none; }
+
+/* ---------------- bouton prout universel ---------------- */
+.prout-btn {
+  position: fixed; right: 2vmin; bottom: 2vmin; z-index: 60;
+  width: 15vmin; height: 15vmin; border-radius: 50%; border: none;
+  font-size: 8vmin; line-height: 1;
+  background: radial-gradient(circle at 35% 30%, #c98a4b, #6b4423);
+  box-shadow: 0 1.2vmin 0 #3a2410, 0 0 4vmin #0007;
+}
+.prout-btn:active { transform: translateY(0.8vmin) scale(.94); }
+.prout-btn.boom { animation: boom .5s ease; }
+@keyframes boom { 40% { transform: scale(1.35) rotate(-14deg); } }
+#screen-start .prout-btn { display: none; }
+
+/* ---------------- confettis & flash ---------------- */
+.confetti-layer { position: fixed; inset: 0; pointer-events: none; z-index: 90; overflow: hidden; }
+.confetti { position: absolute; top: -12vmin; animation: fall linear forwards; }
+@keyframes fall {
+  to { transform: translateY(120vh) rotate(720deg); opacity: .2; }
+}
+.flash {
+  position: fixed; left: 50%; top: 42%; transform: translate(-50%,-50%);
+  z-index: 95; pointer-events: none;
+  font-size: 6vmin; font-weight: 900; color: #fff;
+  background: #000000a6; padding: 2vmin 4vmin; border-radius: 3vmin;
+  animation: flashin 1.2s ease forwards;
+}
+.flash.big { font-size: 11vmin; color: #ffe97a; }
+@keyframes flashin {
+  0% { transform: translate(-50%,-50%) scale(.5); opacity: 0; }
+  20% { transform: translate(-50%,-50%) scale(1.1); opacity: 1; }
+  75% { opacity: 1; }
+  100% { transform: translate(-50%,-60%) scale(1); opacity: 0; }
+}
+
+.wiggle { animation: wig .4s ease; }
+@keyframes wig {
+  25% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } 75% { transform: rotate(-5deg); }
+}
+
+/* ---------------- petits écrans en paysage ---------------- */
+@media (orientation: landscape) and (max-height: 520px) {
+  .card-emoji { font-size: 9vmin; }
+  .letter-btn { width: 26vmin; height: 26vmin; font-size: 15vmin; }
+}
