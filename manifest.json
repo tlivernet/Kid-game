@@ -1,0 +1,35 @@
+{
+  "name": "La Planète des Prouts",
+  "short_name": "Les Prouts",
+  "description": "Apprendre les lettres et les nombres en s'amusant, pour un enfant qui entre au CP.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "background_color": "#150c33",
+  "theme_color": "#1b1140",
+  "categories": ["education", "games", "kids"],
+  "icons": [
+    {
+      "src": "icones/icone-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icones/icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icones/icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

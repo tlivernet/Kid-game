@@ -18,8 +18,24 @@ fichiers HTML/CSS/JS. Ça tourne sur tablette, dans le navigateur.
 3. *Branch* : `main` (ou la branche où se trouve le jeu) + dossier `/ (root)` → **Save**
 4. Au bout d'une minute, GitHub affiche l'adresse :
    `https://tlivernet.github.io/kid-game/`
-5. Ouvre cette adresse sur la tablette, puis **« Ajouter à l'écran d'accueil »**
-   pour avoir une vraie icône en plein écran.
+5. Ouvre cette adresse sur la tablette, puis installe-la (voir juste en dessous).
+
+### 📱 L'installer comme une vraie application
+
+Le jeu est une **PWA** : une fois installé, il a son icône sur l'écran
+d'accueil, s'ouvre en plein écran sans barre de navigateur, et **fonctionne
+entièrement sans connexion** (train, vacances, wifi capricieux). Les 640 Ko du
+jeu, sons compris, sont copiés sur la tablette au premier lancement.
+
+- **iPad / iPhone** : ouvrir l'adresse dans **Safari** (pas Chrome), bouton
+  *Partager* → **Sur l'écran d'accueil**.
+- **Android** : ouvrir dans Chrome → menu ⋮ → **Installer l'application**
+  (une bannière le propose souvent d'elle-même).
+
+Deux conditions : l'adresse doit être en **https** — c'est le cas de GitHub
+Pages — et il faut lancer le jeu **une fois avec du réseau** pour qu'il se
+mette en cache. Ouvert en double-clic depuis un dossier (`file://`), le jeu
+fonctionne mais sans installation ni cache : les navigateurs l'interdisent.
 
 ### Option 2 — Hors-ligne
 
@@ -147,6 +163,9 @@ dessinent exactement pareil : la question serait indevinable.
 
 ```
 index.html          écrans + chargement des scripts
+manifest.json       nom, icônes, plein écran (installation)
+sw.js               cache hors ligne (service worker)
+icones/             icônes PNG de l'application
 sons/               vide par défaut ; vos .mp3 si vous en voulez de vrais
 css/style.css       tout le style (unités vmin : ça s'adapte à l'écran)
 js/audio.js         moteur de sons + voix
@@ -155,6 +174,14 @@ js/core.js          état, sauvegarde, navigation, confettis
 js/boot.js          démarrage et boutons globaux
 js/games/*.js       un fichier par jeu (10 jeux)
 ```
+
+### ⚠️ Après avoir modifié un fichier
+
+Le jeu sert d'abord sa copie en cache puis se rafraîchit en arrière-plan : une
+modification apparaît donc **au lancement suivant**. Si vous **ajoutez** un
+fichier (nouveau jeu, nouveau son), ajoutez-le à la liste `FICHIERS` de
+`sw.js` **et** changez le numéro de `VERSION` — sans ça, les tablettes déjà
+installées garderont l'ancienne version.
 
 ### Ajouter un jeu
 

@@ -91,6 +91,15 @@
   document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
   document.addEventListener('dblclick', function (e) { e.preventDefault(); });
 
+  /* --- installation sur la tablette + fonctionnement hors ligne ---
+     (ignoré si la page est ouverte en double-clic : file:// interdit
+     les service workers, le jeu marche quand même, sans le cache) */
+  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+
   /* --- on coupe la voix si la tablette part en veille --- */
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) Voice.stop();
