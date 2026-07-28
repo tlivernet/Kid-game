@@ -137,19 +137,48 @@ var Sound = (function () {
     });
   }
 
-  /* Joue un vrai fichier s'il y en a un. Renvoie true si c'est fait. */
-  function sample(nom) {
+  /* Coupe en douceur : un arrêt net sur un fichier fait "clac". */
+  function estomper(a, sec) {
+    setTimeout(function () {
+      var v = a.volume, t0 = Date.now();
+      var iv = setInterval(function () {
+        var k = (Date.now() - t0) / 180;
+        if (k >= 1) { clearInterval(iv); try { a.pause(); } catch (e) {} return; }
+        a.volume = Math.max(0, v * (1 - k));
+      }, 30);
+    }, sec * 1000);
+  }
+
+  /* Joue un vrai fichier s'il y en a un. Renvoie true si c'est fait.
+     « len » = durée souhaitée par l'appelant. Les sons de réaction (mauvaise
+     réponse) doivent rester courts, sinon ils couvrent la voix qui encourage
+     et le jeu se traîne ; les gros moments, eux, jouent en entier. */
+  function sample(nom, len) {
     var list = samples[nom];
     if (!list || !list.length) return false;
     try {
-      var src = list[Math.floor(Math.random() * list.length)];
+      var src;
+      if (len && list.length > 1) {
+        // on choisit la variante dont la durée colle le mieux à la demande
+        src = list.reduce(function (best, x) {
+          var dx = Math.abs((x.duration || 1) - len);
+          return dx < Math.abs((best.duration || 1) - len) ? x : best;
+        });
+      } else {
+        src = list[Math.floor(Math.random() * list.length)];
+      }
       var a = src.cloneNode();            // clone = on peut superposer les sons
       a.volume = 0.9;
       var p = a.play();
       if (p && p.catch) p.catch(function () {});
+      // durée lue sur l'original : le clone n'a pas encore ses métadonnées
+      if (len && src.duration > MAX_REACTION) estomper(a, MAX_REACTION);
       return true;
     } catch (e) { return false; }
   }
+
+  /* Au-delà, un bruit de réaction devient pénible à la centième écoute. */
+  var MAX_REACTION = 0.9;
 
   /* --- LE PROUT (la star du jeu) ---
      Tout se joue entre 300 et 2500 Hz : un haut-parleur de tablette ne
@@ -157,7 +186,7 @@ var Sound = (function () {
      (vibrato rapide) et les harmoniques de la dent de scie qui font le
      prout, pas les graves. */
   function prout(len) {
-    if (sample('prout')) return;
+    if (sample('prout', len)) return;
     var c = ac(), t = c.currentTime;
     var dur = len || (0.4 + Math.random() * 0.4);
 
@@ -303,7 +332,7 @@ var Sound = (function () {
 
   /* --- tambour de suspense --- */
   function boing() {
-    if (sample('boing')) return;
+    if (sample('boing', 0.5)) return;
     var c = ac(), t = c.currentTime;
     var o = c.createOscillator(), g = c.createGain();
     o.type = 'triangle';

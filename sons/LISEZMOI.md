@@ -43,4 +43,16 @@ reste **CC0 / domaine public**.
 2. **Restez court** : moins d'une seconde. Un bruitage long finit par agacer
    au bout de la trentième écoute — et il y en aura beaucoup plus que trente.
 
+## Ce que le jeu fait tout seul avec vos fichiers
+
+- **Il choisit la variante selon le moment.** Une mauvaise réponse demande un
+  prout bref, la fin du Prout-du en demande un gros : parmi vos `prout*.mp3`,
+  le jeu prend à chaque fois celui dont la durée colle le mieux. Donnez-lui
+  donc des variantes de longueurs différentes, c'est plus utile que cinq
+  prouts d'une seconde.
+- **Il raccourcit les sons de réaction.** Un bruit qui répond à une erreur est
+  estompé au bout de 0,9 s, sinon il couvre la voix qui encourage l'enfant et
+  le jeu se traîne. Les grands moments (bouton 💩, défaite du pendu) jouent en
+  entier.
+
 Si vous ajoutez des fichiers non-CC0, notez ici leur source et leur licence.
