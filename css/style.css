@@ -325,6 +325,34 @@ body::before {           /* ciel étoilé animé */
   100% { transform: translate(-50%,-60%) scale(1); opacity: 0; }
 }
 
+/* ---------------- confirmation "réservée aux grands" ---------------- */
+.gate {
+  position: fixed; inset: 0; z-index: 100;
+  background: #000000b8; display: flex; align-items: center; justify-content: center;
+  padding: 4vmin;
+}
+.gate-box {
+  background: linear-gradient(180deg, #2b1f5e, #1a1240);
+  border-radius: 4vmin; padding: 4vmin 5vmin; text-align: center;
+  box-shadow: 0 2vmin 6vmin #000a; max-width: 90vw;
+}
+.gate-title { font-size: 5.5vmin; font-weight: 900; color: #ffe97a; }
+.gate-sub { font-size: 3vmin; opacity: .8; margin-top: 1vmin; }
+.gate-q { font-size: 4.2vmin; font-weight: 800; margin: 3vmin 0 2vmin; }
+.gate-opts { display: flex; gap: 2vmin; justify-content: center; flex-wrap: wrap; }
+.gate-num {
+  font-family: inherit; font-size: 5vmin; font-weight: 900; color: #2b0a3d;
+  min-width: 16vmin; padding: 1.6vmin 2vmin; border: none; border-radius: 2.4vmin;
+  background: linear-gradient(180deg, #ffffff, #cfc7e8);
+  box-shadow: 0 1vmin 0 #6b5ba3;
+}
+.gate-num:active { transform: translateY(0.8vmin); box-shadow: none; }
+.gate-cancel {
+  margin-top: 3vmin; font-family: inherit; font-size: 3.6vmin; font-weight: 800;
+  color: #fff; background: #ffffff26; border: none;
+  border-radius: 999px; padding: 1.4vmin 4vmin;
+}
+
 .wiggle { animation: wig .4s ease; }
 @keyframes wig {
   25% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } 75% { transform: rotate(-5deg); }

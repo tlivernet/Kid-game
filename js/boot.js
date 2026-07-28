@@ -37,21 +37,53 @@
     if (Math.random() < 0.2) App.confetti(8);
   });
 
-  /* --- remise à zéro (appui long de 1,5 s : hors de portée d'un enfant) --- */
-  var rst = document.getElementById('btn-reset'), holdT = null;
-  function armReset() {
-    rst.classList.add('holding');
-    holdT = setTimeout(function () {
-      App.reset(); App.buildMenu(); Sound.ballon();
-      App.flash('Tout est effacé 🧹');
-      rst.classList.remove('holding');
-    }, 1500);
+  /* --- remise à zéro : une multiplication barre la route aux enfants ---
+     (l'appui long ne marchait pas : sur tablette il déclenche le menu
+     contextuel du navigateur, qui envoie un pointercancel.) */
+  tap(document.getElementById('btn-reset'), function () { Sound.pop(); openGate(); });
+
+  function openGate() {
+    var a = 3 + Math.floor(Math.random() * 7);
+    var b = 3 + Math.floor(Math.random() * 7);
+    var bon = a * b;
+    var opts = [bon];
+    while (opts.length < 4) {
+      var v = bon + Math.floor(Math.random() * 13) - 6;
+      if (v > 0 && opts.indexOf(v) < 0) opts.push(v);
+    }
+
+    var ov = el('div', 'gate');
+    var box = el('div', 'gate-box');
+    box.appendChild(el('div', 'gate-title', '🧹 Tout effacer ?'));
+    box.appendChild(el('div', 'gate-sub',
+      'Étoiles, prouts et niveaux repartent à zéro.'));
+    box.appendChild(el('div', 'gate-q',
+      'Réservé aux grands : ' + a + ' × ' + b + ' = ?'));
+
+    var row = el('div', 'gate-opts');
+    shuffle(opts).forEach(function (v) {
+      var btn = el('button', 'gate-num', String(v));
+      tap(btn, function () {
+        if (v !== bon) { wiggle(btn); Sound.oops(); return; }
+        close();
+        App.reset(); App.buildMenu();
+        Sound.ballon();
+        App.flash('Tout est effacé 🧹');
+      });
+      row.appendChild(btn);
+    });
+    box.appendChild(row);
+
+    var cancel = el('button', 'gate-cancel', '❌ Annuler');
+    tap(cancel, function () { Sound.pop(); close(); });
+    box.appendChild(cancel);
+
+    ov.appendChild(box);
+    tap(ov, function (e) { if (e.target === ov) close(); });
+    document.body.appendChild(ov);
+
+    function close() { if (ov.parentNode) ov.parentNode.removeChild(ov); }
   }
-  function cancelReset() { clearTimeout(holdT); rst.classList.remove('holding'); }
-  rst.addEventListener('pointerdown', armReset);
-  rst.addEventListener('pointerup', cancelReset);
-  rst.addEventListener('pointerleave', cancelReset);
-  rst.addEventListener('pointercancel', cancelReset);
 
   /* --- évite le zoom/scroll parasite avec les doigts --- */
   document.addEventListener('gesturestart', function (e) { e.preventDefault(); });

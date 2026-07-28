@@ -8,8 +8,8 @@ Games.prouts = (function () {
 
   var BOUTONS = [
     { e: '💩', n: 'Prout',          need: 0,  f: function () { Sound.prout(); } },
-    { e: '🎺', n: 'Prout trompette',need: 0,  f: function () { Sound.prout(0.9); } },
-    { e: '🫧', n: 'Petit prout',    need: 3,  f: function () { Sound.prout(0.18); } },
+    { e: '🎺', n: 'Prout trompette',need: 0,  f: function () { Sound.proutTrompette(); } },
+    { e: '🫧', n: 'Petit prout',    need: 3,  f: function () { Sound.petitProut(); } },
     { e: '🐸', n: 'Rot de crapaud', need: 6,  f: function () { Sound.rot(); } },
     { e: '🎈', n: 'Ballon fou',     need: 10, f: function () { Sound.ballon(); } },
     { e: '🥁', n: 'Boing !',        need: 14, f: function () { Sound.boing(); } },

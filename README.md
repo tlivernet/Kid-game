@@ -84,8 +84,8 @@ dessinent exactement pareil : la question serait indevinable.
 
 ## 🧹 Réglages
 
-- **Effacer la progression** : appui long (1,5 s) sur le balai 🧹 en haut à droite
-  du menu — volontairement hors de portée d'un enfant qui tapote.
+- **Effacer la progression** : le balai 🧹 en haut à droite du menu, puis une
+  multiplication à résoudre — un enfant de 5 ans ne passe pas, un adulte oui.
 - **Faire répéter la consigne** : le bouton 🔁 en haut de chaque jeu, ou le
   gros bouton 👂 dans la Dictée Magique.
 - La progression est stockée dans le navigateur de la tablette (localStorage).
@@ -96,8 +96,13 @@ dessinent exactement pareil : la question serait indevinable.
 
 - HTML/CSS/JS **vanilla**, aucune dépendance, aucun build, aucun appel réseau.
 - Tous les sons sont **synthétisés à la volée** par la Web Audio API — y compris
-  les prouts (oscillateur en dents de scie + vibrato + filtre passe-bas qui
-  s'effondre). Aucun fichier audio dans le dépôt.
+  les prouts (dent de scie + vibrato rapide + filtre passe-bas + couche de bruit
+  filtré). Aucun fichier audio dans le dépôt.
+- Les sons sont calibrés pour un **haut-parleur de tablette**, qui ne restitue
+  quasiment rien sous 200 Hz : l'énergie est maintenue entre 300 et 2500 Hz et
+  c'est le vibrato (le « brrr ») plus les harmoniques qui font le prout, pas les
+  graves. `Sound._useContext()` permet de rejouer chaque son dans un
+  `OfflineAudioContext` pour le mesurer ou l'exporter en WAV.
 - La voix utilise `SpeechSynthesis` en `fr-FR`, avec une écriture phonétique des
   noms de lettres (`B` → « bé », `Y` → « i grec ») sinon la synthèse les lit mal.
 - Les lettres du Tableau Magique sont définies comme des polylignes normalisées
