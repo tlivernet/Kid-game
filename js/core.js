@@ -99,6 +99,10 @@ var App = (function () {
     stopGame();
     Voice.stop();
     refreshScore();
+    // On RECONSTRUIT le menu à chaque retour : les étoiles viennent de
+    // changer, donc les cadenas et les 🔥 de niveau aussi. Sans ça, les
+    // cartes gardaient l'état qu'elles avaient au démarrage du jeu.
+    buildMenu();
     show('screen-menu');
   }
 
@@ -261,10 +265,15 @@ var App = (function () {
           '<div class="card-lvl">⭐ ' + g.need + '</div>';
       tap(card, function () {
         if (!ouvert) {
+          // filet de sécurité : si les étoiles suffisent malgré le cadenas,
+          // c'est l'affichage qui est en retard — on ouvre au lieu de dire
+          // à l'enfant qu'il lui manque « 0 » étoile.
+          if (unlocked(id)) { buildMenu(); Sound.sparkle(); play(id); return; }
           Sound.boing();
           var reste = g.need - state.stars;
           flash('🔒 Encore ' + reste + ' ⭐');
-          Voice.say('Il te manque ' + reste + ' étoiles pour ce jeu !');
+          Voice.say('Il te manque ' + reste +
+                    (reste > 1 ? ' étoiles' : ' étoile') + ' pour ce jeu !');
           return;
         }
         Sound.pop();
