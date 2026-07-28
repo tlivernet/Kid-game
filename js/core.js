@@ -3,6 +3,14 @@
    ========================================================================== */
 var Games = {};   // les jeux s'enregistrent eux-mêmes ici
 
+/* Instant du dernier changement d'écran : sert à ignorer les "touches
+   fantômes" du geste qui vient justement de changer d'écran.
+   Court exprès : le vrai rempart, c'est l'avalage du 'click' dans tap().
+   Un garde-temps long avalerait aussi les appuis volontaires — un enfant
+   qui tape « Encore ! » dès l'apparition de l'écran doit être entendu. */
+var screenAt = 0;
+var GHOST_MS = 150;
+
 var App = (function () {
   var KEY = 'planete-prouts-v1';
   var state = { stars: 0, proutons: 0, best: {}, level: {} };
@@ -35,7 +43,8 @@ var App = (function () {
   function levelOf(id) { return state.level[id] || 1; }
   function bumpLevel(id, ok) {
     var lv = levelOf(id);
-    if (ok && lv < 4) state.level[id] = lv + 1;
+    var max = (Games[id] && Games[id].maxLevel) || 4;
+    if (ok && lv < max) state.level[id] = lv + 1;
     else if (!ok && lv > 1) state.level[id] = lv - 1;
     save();
   }
@@ -55,6 +64,11 @@ var App = (function () {
 
   /* ---------- navigation ---------- */
   function show(id) {
+    // Le doigt qui appuie sur 🏠 se lève APRÈS l'apparition du menu : le
+    // navigateur envoie alors un click sur la carte qui se trouve dessous,
+    // et un jeu se lançait tout seul. On ignore donc toute touche pendant
+    // un court instant après un changement d'écran (cf. tap()).
+    screenAt = Date.now();
     var all = document.querySelectorAll('.screen');
     for (var i = 0; i < all.length; i++) all[i].classList.remove('active');
     document.getElementById(id).classList.add('active');
@@ -72,7 +86,7 @@ var App = (function () {
     if (current && current.stop) { try { current.stop(); } catch (e) {} }
     current = null; currentId = null;
     var root = document.getElementById('game-root');
-    if (root) root.innerHTML = '';
+    if (root) { root.innerHTML = ''; root.className = 'game-root'; }
     setDots(0, 0);
   }
 
@@ -182,7 +196,7 @@ var App = (function () {
         '<div class="card-emoji">' + g.emoji + '</div>' +
         '<div class="card-title">' + g.title + '</div>' +
         '<div class="card-lvl">' + '🔥'.repeat(levelOf(id)) + '</div>';
-      card.addEventListener('click', function () {
+      tap(card, function () {
         Sound.pop();
         Voice.say(g.spoken || g.title);
         play(id);
@@ -212,15 +226,23 @@ function el(tag, cls, txt) {
   return e;
 }
 
-/* tap() : réagit au doigt SANS le délai de 300 ms des tablettes */
+/* tap() : réagit au doigt SANS le délai de 300 ms des tablettes.
+   Tous les boutons du jeu passent par ici — jamais 'click' — sinon on
+   mélange deux temporalités : 'pointerdown' se déclenche quand le doigt
+   se pose, 'click' quand il se lève, donc sur un autre écran. */
 function tap(node, fn) {
   var fired = false;
   node.addEventListener('pointerdown', function (ev) {
     if (fired) return;
+    if (Date.now() - screenAt < GHOST_MS) return;   // touche fantôme
     fired = true;
     setTimeout(function () { fired = false; }, 350);
     ev.preventDefault();
     fn(ev);
+  });
+  // ceinture et bretelles : on avale aussi le click de compatibilité
+  node.addEventListener('click', function (ev) {
+    ev.preventDefault(); ev.stopPropagation();
   });
   return node;
 }

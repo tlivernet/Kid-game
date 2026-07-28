@@ -145,6 +145,11 @@ body::before {           /* ciel étoilé animé */
 .letter-btn.ko { opacity: .45; }
 .letter-btn.helped { animation: hop .6s ease infinite; box-shadow: 0 0 3vmin 1vmin #ffe97a; }
 .letter-btn.num { font-size: 11vmin; }
+/* la rangée de chiffres est tout en bas : on lui interdit le coin
+   occupé par le bouton 💩, sinon la dernière touche passe dessous */
+.choices.num { padding: 0 16vmin; }
+.choices.num.c5 .letter-btn { width: 16vmin; height: 16vmin; font-size: 9vmin; }
+.choices.num.c6 .letter-btn { width: 14vmin; height: 14vmin; font-size: 8vmin; }
 @keyframes popok { 40% { transform: scale(1.25) rotate(-6deg); } }
 @keyframes hop { 50% { transform: translateY(-2vmin); } }
 
@@ -228,6 +233,18 @@ body::before {           /* ciel étoilé animé */
   flex: 1; display: flex; flex-wrap: wrap; gap: 1.5vmin;
   align-items: center; justify-content: center; align-content: center;
   background: #ffffff0d; border-radius: 3vmin; padding: 2vmin; min-height: 0;
+}
+.compte-zone.eparpille { position: relative; display: block; }
+.compte-zone.eparpille .zigoto {
+  position: absolute; transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+  animation: drop2 .45s ease backwards;
+}
+@keyframes drop2 {
+  from { transform: translate(-50%, -90%) scale(.4); opacity: 0; }
+}
+.compte-zone.eparpille .zigoto.counted { animation: countpop2 .5s ease; }
+@keyframes countpop2 {
+  50% { transform: translate(-50%, -50%) scale(1.5) rotate(10deg); }
 }
 .zigoto {
   font-size: 11vmin; line-height: 1; display: inline-block;

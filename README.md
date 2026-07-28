@@ -40,7 +40,7 @@ fichier audio à télécharger).
 | 🎈 **Attrape-Ballons** | Éclater les ballons portant la bonne lettre | Balayage visuel rapide, réflexe |
 | 👯 **Les Jumeaux** | Memory : associer `A` et `a` | **Le lien majuscule ↔ minuscule** |
 | 🎩 **Le Prout-du** | Le pendu : trouver les lettres d'un mot | Décomposition d'un mot en lettres |
-| 🔢 **Compte les Zigotos** | Compter des personnages, toucher le bon chiffre | Dénombrement, chiffres 1→10 |
+| 🔢 **Compte les Zigotos** | Compter des personnages, toucher le bon chiffre | Dénombrement, nombres 1→20 |
 | ✍️ **Tableau Magique** | Tracer la lettre au doigt en suivant le chemin | Geste d'écriture, sens du tracé |
 | 💩 **Boîte à Prouts** | Récréation : appuyer sur des boutons rigolos | (rien — c'est la récompense !) |
 
@@ -77,6 +77,11 @@ Chaque jeu a 4 niveaux (les 🔥 sur les cartes du menu). Réussite → on monte
 difficulté → on redescend. Progression : majuscules faciles (A O I S M L) →
 alphabet complet → minuscules → mélange des deux écritures.
 
+*Compte les Zigotos* va plus loin, avec **6 niveaux** : de 5 zigotos bien
+alignés jusqu'à 20 éparpillés en désordre. Les chiffres proposés sont des
+voisins du bon nombre (il faut compter juste, pas à peu près) et sont
+**rangés dans l'ordre croissant** pour construire la frise des nombres.
+
 **Le « l » et le « I » ne sont jamais proposés ensemble**, parce qu'ils se
 dessinent exactement pareil : la question serait indevinable.
 
@@ -103,14 +108,22 @@ dessinent exactement pareil : la question serait indevinable.
   c'est le vibrato (le « brrr ») plus les harmoniques qui font le prout, pas les
   graves. `Sound._useContext()` permet de rejouer chaque son dans un
   `OfflineAudioContext` pour le mesurer ou l'exporter en WAV.
+- Vous pouvez remplacer n'importe quel bruitage par un **vrai enregistrement** :
+  voir `sons/LISEZMOI.md`. Sans fichier, le jeu reste 100 % synthétisé.
 - La voix utilise `SpeechSynthesis` en `fr-FR`, avec une écriture phonétique des
   noms de lettres (`B` → « bé », `Y` → « i grec ») sinon la synthèse les lit mal.
+  Les mots du pendu sont eux aussi stockés en version « à dire » (`zèbre` et non
+  `ZEBRE`) : en majuscules, la synthèse prend le mot pour un sigle et l'épelle.
+- Tous les boutons passent par `tap()` (sur `pointerdown`) et **jamais** par
+  `click` : mélanger les deux fait qu'un doigt qui se lève après un changement
+  d'écran déclenche l'élément situé dessous sur le nouvel écran.
 - Les lettres du Tableau Magique sont définies comme des polylignes normalisées
   dans `js/data.js` (`TRACES`), rééchantillonnées en points de contrôle : le
   tracé est validé si le doigt passe près de chaque point, dans l'ordre.
 
 ```
 index.html          écrans + chargement des scripts
+sons/               vide par défaut ; vos .mp3 si vous en voulez de vrais
 css/style.css       tout le style (unités vmin : ça s'adapte à l'écran)
 js/audio.js         moteur de sons + voix
 js/data.js          lettres, mots, chiffres, tracés des lettres

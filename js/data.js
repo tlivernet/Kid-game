@@ -33,21 +33,30 @@ var LETTER_LEVELS = [
   ALPHABET.slice()                                    // niveau 4 : tout
 ];
 
-/* Mots du Pendu : courts, illustrés, et… quelques mots qui font rire. */
+/* Mots du Pendu : courts, illustrés, et… quelques mots qui font rire.
+   « d » = la façon de DIRE le mot. Sans ça, la synthèse vocale prend
+   « ZEBRE » pour un sigle et l'épelle lettre par lettre : il faut lui
+   donner le mot en minuscules et avec ses accents. */
 var MOTS = [
-  { m: 'CACA', e: '💩' }, { m: 'PIPI', e: '🚽' }, { m: 'PROUT', e: '💨' },
-  { m: 'CHAT', e: '🐱' }, { m: 'CHIEN', e: '🐶' }, { m: 'LUNE', e: '🌙' },
-  { m: 'VELO', e: '🚲' }, { m: 'POMME', e: '🍎' }, { m: 'SOLEIL', e: '☀️' },
-  { m: 'ROBOT', e: '🤖' }, { m: 'PIZZA', e: '🍕' }, { m: 'FUSEE', e: '🚀' },
-  { m: 'BALLON', e: '🎈' }, { m: 'DINO', e: '🦖' }, { m: 'PAPA', e: '👨' },
-  { m: 'MAMAN', e: '👩' }, { m: 'GATEAU', e: '🍰' }, { m: 'SLIP', e: '🩲' },
-  { m: 'VACHE', e: '🐮' }, { m: 'BANANE', e: '🍌' }, { m: 'ETOILE', e: '⭐' },
-  { m: 'POULE', e: '🐔' }, { m: 'TRAIN', e: '🚂' }, { m: 'ZEBRE', e: '🦓' }
+  { m: 'CACA', e: '💩', d: 'caca' },        { m: 'PIPI', e: '🚽', d: 'pipi' },
+  { m: 'PROUT', e: '💨', d: 'prout' },      { m: 'CHAT', e: '🐱', d: 'chat' },
+  { m: 'CHIEN', e: '🐶', d: 'chien' },      { m: 'LUNE', e: '🌙', d: 'lune' },
+  { m: 'VELO', e: '🚲', d: 'vélo' },        { m: 'POMME', e: '🍎', d: 'pomme' },
+  { m: 'SOLEIL', e: '☀️', d: 'soleil' },    { m: 'ROBOT', e: '🤖', d: 'robot' },
+  { m: 'PIZZA', e: '🍕', d: 'pizza' },      { m: 'FUSEE', e: '🚀', d: 'fusée' },
+  { m: 'BALLON', e: '🎈', d: 'ballon' },    { m: 'DINO', e: '🦖', d: 'dino' },
+  { m: 'PAPA', e: '👨', d: 'papa' },        { m: 'MAMAN', e: '👩', d: 'maman' },
+  { m: 'GATEAU', e: '🍰', d: 'gâteau' },    { m: 'SLIP', e: '🩲', d: 'slip' },
+  { m: 'VACHE', e: '🐮', d: 'vache' },      { m: 'BANANE', e: '🍌', d: 'banane' },
+  { m: 'ETOILE', e: '⭐', d: 'étoile' },    { m: 'POULE', e: '🐔', d: 'poule' },
+  { m: 'TRAIN', e: '🚂', d: 'train' },      { m: 'ZEBRE', e: '🦓', d: 'zèbre' }
 ];
 
 /* Chiffres : comment les prononcer + un emoji à compter */
 var CHIFFRE_SAY = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq',
-                   'six', 'sept', 'huit', 'neuf', 'dix'];
+                   'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze',
+                   'treize', 'quatorze', 'quinze', 'seize', 'dix-sept',
+                   'dix-huit', 'dix-neuf', 'vingt'];
 
 var COMPTE_EMOJIS = ['🐸', '🍪', '🚗', '🐟', '🐝', '🍭', '👻', '🦆', '🐛', '🍄',
                      '⚽', '🐧', '🎩', '🦕', '🍩', '💩'];

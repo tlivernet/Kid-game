@@ -6,7 +6,7 @@
 Games.pendu = (function () {
   var MAX = 6;
   var FACES = ['🙂', '😯', '😮', '😳', '😰', '🤢', '💥'];
-  var root, api, level, mot, emoji, trouvees, erreurs, over;
+  var root, api, level, mot, dit, emoji, trouvees, erreurs, over;
 
   function motsFor(lv) {
     var max = [4, 5, 6, 99][Math.min(lv, 4) - 1];
@@ -18,7 +18,7 @@ Games.pendu = (function () {
   function start(_root, _api, lv) {
     root = _root; api = _api; level = lv;
     var w = pick(motsFor(lv));
-    mot = w.m; emoji = w.e;
+    mot = w.m; dit = w.d || w.m.toLowerCase(); emoji = w.e;
     trouvees = {}; erreurs = 0; over = false;
 
     root.innerHTML =
@@ -91,7 +91,7 @@ Games.pendu = (function () {
     document.getElementById('p-img').textContent = emoji;
     document.getElementById('p-guy').textContent = '🥳';
     var stars = erreurs <= 1 ? 3 : (erreurs <= 3 ? 2 : 1);
-    Voice.say('Le mot était… ' + mot + ' !', {
+    Voice.say('Le mot était… ' + dit + ' !', {
       then: function () {
         if (!api.alive()) return;
         api.bumpLevel('pendu', erreurs <= 2);
@@ -109,7 +109,7 @@ Games.pendu = (function () {
     // on révèle tout : l'enfant repart avec le mot en tête
     mot.split('').forEach(function (L) { trouvees[L] = true; });
     drawWord();
-    Voice.say('Ooooh il a pété ! Le mot était ' + mot + '.', {
+    Voice.say('Ooooh il a pété ! Le mot était ' + dit + '.', {
       then: function () {
         if (!api.alive()) return;
         api.bumpLevel('pendu', false); api.win(1, '💨');
@@ -119,7 +119,7 @@ Games.pendu = (function () {
 
   function repeat() {
     if (!mot) return;
-    Voice.say('Trouve les lettres du mot… ' + mot, { rate: 0.85 });
+    Voice.say('Trouve les lettres du mot… ' + dit, { rate: 0.85 });
   }
 
   function stop() { mot = null; over = true; }

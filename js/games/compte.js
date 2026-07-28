@@ -1,16 +1,24 @@
 /* ==========================================================================
    Compte les Zigotos 🔢 — combien y en a-t-il ? On touche le bon chiffre.
    Bonus : à chaque réussite, on recompte à voix haute avec l'enfant.
+   6 niveaux : de 5 zigotos bien alignés jusqu'à 20 éparpillés.
    ========================================================================== */
 Games.compte = (function () {
   var TOTAL = 6;
   var root, api, level, q, score, n, busy, timer;
 
+  /* eparpille : aligné, c'est un coup d'œil ; éparpillé, il faut vraiment
+     organiser son comptage — c'est là que la difficulté monte. */
   function config(lv) {
-    if (lv <= 1) return { max: 5, choices: 3 };
-    if (lv === 2) return { max: 6, choices: 4 };
-    if (lv === 3) return { max: 9, choices: 4 };
-    return { max: 10, choices: 5 };
+    // min : sans plancher, un niveau 6 pouvait tomber sur « 2 zigotos »
+    return [
+      { min: 1, max: 5,  choices: 3, eparpille: false, melange: false },
+      { min: 2, max: 8,  choices: 4, eparpille: false, melange: false },
+      { min: 3, max: 10, choices: 4, eparpille: false, melange: false },
+      { min: 5, max: 12, choices: 5, eparpille: true,  melange: false },
+      { min: 7, max: 16, choices: 5, eparpille: true,  melange: true  },
+      { min: 9, max: 20, choices: 6, eparpille: true,  melange: true  }
+    ][Math.min(Math.max(lv, 1), 6) - 1];
   }
 
   function start(_root, _api, lv) {
@@ -27,24 +35,50 @@ Games.compte = (function () {
     busy = false;
     api.dots(q, TOTAL);
     var cfg = config(level);
-    n = 1 + Math.floor(Math.random() * cfg.max);
-    var emo = pick(COMPTE_EMOJIS);
+    n = cfg.min + Math.floor(Math.random() * (cfg.max - cfg.min + 1));
 
+    poser(cfg);
+    proposer(cfg);
+    setTimeout(repeat, 300);
+  }
+
+  /* --- les zigotos --- */
+  function poser(cfg) {
     var zone = document.getElementById('c-zone');
     zone.innerHTML = '';
+    zone.className = 'compte-zone' + (cfg.eparpille ? ' eparpille' : '');
+    var emo = pick(COMPTE_EMOJIS);
+    var taille = n <= 6 ? 11 : (n <= 12 ? 8 : 6.2);
+
+    // une grille invisible + du désordre : éparpillé mais jamais superposé
+    var cols = Math.max(1, Math.ceil(Math.sqrt(n * 1.6)));
+    var rows = Math.ceil(n / cols);
+
     for (var i = 0; i < n; i++) {
-      var s = el('span', 'zigoto', emo);
-      s.style.animationDelay = (i * 0.08) + 's';
-      s.style.setProperty('--rot', (Math.random() * 24 - 12) + 'deg');
+      var s = el('span', 'zigoto', cfg.melange ? pick(COMPTE_EMOJIS) : emo);
+      s.style.fontSize = taille + 'vmin';
+      s.style.animationDelay = (i * (n > 10 ? 0.03 : 0.06)) + 's';
+      s.style.setProperty('--rot', (Math.random() * 30 - 15) + 'deg');
+      if (cfg.eparpille) {
+        var c = i % cols, r = Math.floor(i / cols);
+        s.style.left = ((c + 0.5) / cols * 100 + (Math.random() - 0.5) * 40 / cols) + '%';
+        s.style.top = ((r + 0.5) / rows * 100 + (Math.random() - 0.5) * 40 / rows) + '%';
+      }
       zone.appendChild(s);
     }
+  }
 
+  /* --- les chiffres proposés --- */
+  function proposer(cfg) {
+    // des voisins plutôt que du hasard : il faut compter juste, pas à peu près
+    var voisins = shuffle([n - 1, n + 1, n - 2, n + 2, n - 3, n + 3])
+      .filter(function (v) { return v > 0 && v <= cfg.max + 3; });
     var opts = [n];
-    while (opts.length < cfg.choices) {
-      var c = 1 + Math.floor(Math.random() * cfg.max);
-      if (opts.indexOf(c) < 0) opts.push(c);
+    for (var i = 0; i < voisins.length && opts.length < cfg.choices; i++) {
+      if (opts.indexOf(voisins[i]) < 0) opts.push(voisins[i]);
     }
-    opts = shuffle(opts);
+    // rangés dans l'ordre : l'enfant se construit une frise des nombres
+    opts.sort(function (a, b) { return a - b; });
 
     var box = document.getElementById('c-choices');
     box.innerHTML = '';
@@ -55,8 +89,6 @@ Games.compte = (function () {
       tap(b, function () { answer(b, v); });
       box.appendChild(b);
     });
-
-    setTimeout(repeat, 300);
   }
 
   function repeat() { Voice.say('Combien y en a-t-il ?', { rate: 0.9 }); }
@@ -77,10 +109,14 @@ Games.compte = (function () {
     compter(0);
   }
 
-  /* On recompte à voix haute en faisant sauter chaque personnage */
+  /* On recompte à voix haute en faisant sauter chaque zigoto.
+     Au-delà de 12, on compte trop vite pour que la voix suive : on garde
+     alors le rythme sonore et on n'annonce que le total. */
   function compter(i) {
     if (!api.alive()) return;
     var zigs = root.querySelectorAll('.zigoto');
+    var pas = n <= 6 ? 620 : (n <= 12 ? 430 : 300);
+
     if (i >= zigs.length) {
       api.confetti(12);
       Voice.say('Ça fait ' + CHIFFRE_SAY[n] + ' ! ' + pick(BRAVOS), {
@@ -89,9 +125,9 @@ Games.compte = (function () {
       return;
     }
     zigs[i].classList.add('counted');
-    Sound.note(480 + i * 70, 0, 0.14, 'triangle', 0.22);
-    Voice.say(CHIFFRE_SAY[i + 1], { rate: 1 });
-    timer = setTimeout(function () { compter(i + 1); }, 620);
+    Sound.note(440 + i * 45, 0, 0.13, 'triangle', 0.22);
+    if (pas >= 420) Voice.say(CHIFFRE_SAY[i + 1], { rate: 1 });
+    timer = setTimeout(function () { compter(i + 1); }, pas);
   }
 
   function finish() {
@@ -107,6 +143,7 @@ Games.compte = (function () {
   return {
     title: 'Compte les Zigotos', spoken: 'Compte les zigotos',
     emoji: '🔢', color: 'linear-gradient(160deg,#3ec6ff,#0b5ea8)',
+    maxLevel: 6,
     start: start, stop: stop, repeat: repeat
   };
 })();

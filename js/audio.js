@@ -29,6 +29,7 @@ var Sound = (function () {
     o.connect(g); g.connect(master);
     o.start(); o.stop(c.currentTime + 0.03);
     ready = true;
+    loadSamples();
     Voice.unlock();
   }
 
@@ -52,6 +53,26 @@ var Sound = (function () {
       for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     }
     return noiseCache;
+  }
+
+  /* Modulation CHAOTIQUE : du bruit blanc passé dans un filtre très grave
+     donne une courbe qui tremblote au hasard. Branchée sur la fréquence
+     d'un oscillateur, elle fait un flottement irrégulier — c'est ça qui
+     distingue un vrai bruit corporel d'un vibrato de synthétiseur. */
+  function chaos(t, dur, cutoff, depth, param) {
+    var c = ac();
+    var src = c.createBufferSource();
+    src.buffer = noiseBuffer();
+    src.loop = true;
+    src.playbackRate.value = 0.6 + Math.random() * 0.8;   // jamais deux fois pareil
+    var lp = c.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = cutoff;
+    lp.Q.value = 0.7;
+    var g = c.createGain();
+    g.gain.value = depth;
+    src.connect(lp); lp.connect(g); g.connect(param);
+    src.start(t); src.stop(t + dur + 0.05);
   }
 
   /* souffle filtré : ajoute le "grain" sans énergie inaudible dans les graves */
@@ -91,58 +112,102 @@ var Sound = (function () {
     return o;
   }
 
+  /* ========================================================================
+     VRAIS FICHIERS SONORES (optionnels)
+     Les fichiers déclarés dans sons/sons.js remplacent les sons
+     synthétisés correspondants. Liste vide par défaut : le jeu fabrique
+     alors tous ses bruits lui-même. Voir sons/LISEZMOI.md.
+     ======================================================================== */
+  var samples = {}, samplesTried = false;
+
+  function loadSamples() {
+    if (samplesTried || typeof Audio === 'undefined') return;
+    samplesTried = true;
+    var liste = window.SONS_REELS || {};
+    Object.keys(liste).forEach(function (nom) {
+      (liste[nom] || []).forEach(function (url) {
+        var a = new Audio();
+        a.preload = 'auto';
+        a.addEventListener('canplaythrough', function () {
+          (samples[nom] = samples[nom] || []).push(a);
+        }, { once: true });
+        a.addEventListener('error', function () { /* fichier absent : on garde la synthèse */ });
+        a.src = url;
+      });
+    });
+  }
+
+  /* Joue un vrai fichier s'il y en a un. Renvoie true si c'est fait. */
+  function sample(nom) {
+    var list = samples[nom];
+    if (!list || !list.length) return false;
+    try {
+      var src = list[Math.floor(Math.random() * list.length)];
+      var a = src.cloneNode();            // clone = on peut superposer les sons
+      a.volume = 0.9;
+      var p = a.play();
+      if (p && p.catch) p.catch(function () {});
+      return true;
+    } catch (e) { return false; }
+  }
+
   /* --- LE PROUT (la star du jeu) ---
      Tout se joue entre 300 et 2500 Hz : un haut-parleur de tablette ne
      restitue quasiment rien en dessous de 200 Hz. C'est le "flottement"
      (vibrato rapide) et les harmoniques de la dent de scie qui font le
      prout, pas les graves. */
   function prout(len) {
+    if (sample('prout')) return;
     var c = ac(), t = c.currentTime;
     var dur = len || (0.4 + Math.random() * 0.4);
 
     var o = c.createOscillator();
     o.type = 'sawtooth';
-    var f0 = 190 + Math.random() * 70;
+    var f0 = 175 + Math.random() * 65;
     o.frequency.setValueAtTime(f0, t);
-    o.frequency.exponentialRampToValueAtTime(f0 * 0.62, t + dur);
+    o.frequency.exponentialRampToValueAtTime(f0 * 0.6, t + dur);
 
-    // le "brrrr" : vibrato rapide qui ralentit
+    // le "brrrr" : flottement chaotique + un peu de vibrato régulier
+    chaos(t, dur, 26, 70 + Math.random() * 40, o.frequency);
     var lfo = c.createOscillator(), lfoG = c.createGain();
-    lfo.type = 'sine';
-    lfo.frequency.setValueAtTime(30 + Math.random() * 14, t);
-    lfo.frequency.linearRampToValueAtTime(13 + Math.random() * 6, t + dur);
-    lfoG.gain.value = 40 + Math.random() * 25;
+    lfo.type = 'triangle';
+    lfo.frequency.setValueAtTime(26 + Math.random() * 12, t);
+    lfo.frequency.linearRampToValueAtTime(11 + Math.random() * 5, t + dur);
+    lfoG.gain.value = 22;
     lfo.connect(lfoG); lfoG.connect(o.frequency);
 
     var filt = c.createBiquadFilter();
     filt.type = 'lowpass';
-    filt.frequency.setValueAtTime(2400, t);
-    filt.frequency.exponentialRampToValueAtTime(950, t + dur);
-    filt.Q.value = 3;
+    filt.frequency.setValueAtTime(2600, t);
+    filt.frequency.exponentialRampToValueAtTime(1000, t + dur);
+    filt.Q.value = 2;
 
     var g = c.createGain();
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.5, t + 0.025);
-    g.gain.setValueAtTime(0.5, t + dur * 0.6);
+    g.gain.exponentialRampToValueAtTime(0.42, t + 0.02);
+    g.gain.setValueAtTime(0.42, t + dur * 0.6);
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    chaos(t, dur, 18, 0.13, g.gain);   // le volume aussi crachote
 
     o.connect(filt); filt.connect(g); g.connect(master);
     o.start(t); o.stop(t + dur + 0.06);
     lfo.start(t); lfo.stop(t + dur + 0.06);
 
-    breath(t, dur, 900, 0.9, 0.07);
+    breath(t, dur, 950, 0.8, 0.08);
   }
 
   /* --- petit prout aigu et bref : le "pfffft" --- */
   function petitProut() {
+    if (sample('petit-prout')) return;
     var c = ac(), t = c.currentTime, dur = 0.17;
     var o = c.createOscillator();
     o.type = 'square';
     o.frequency.setValueAtTime(520, t);
     o.frequency.exponentialRampToValueAtTime(300, t + dur);
     var lfo = c.createOscillator(), lg = c.createGain();
-    lfo.type = 'sine'; lfo.frequency.value = 55; lg.gain.value = 70;
+    lfo.type = 'sine'; lfo.frequency.value = 55; lg.gain.value = 55;
     lfo.connect(lg); lg.connect(o.frequency);
+    chaos(t, dur, 60, 90, o.frequency);
     var f = c.createBiquadFilter();
     f.type = 'lowpass'; f.frequency.value = 3600; f.Q.value = 1;
     var g = c.createGain();
@@ -154,6 +219,7 @@ var Sound = (function () {
 
   /* --- le prout-trompette : ça monte, ça claironne, ça retombe --- */
   function proutTrompette() {
+    if (sample('prout-trompette')) return;
     var c = ac(), t = c.currentTime, dur = 0.85;
     var o = c.createOscillator(), o2 = c.createOscillator();
     o.type = o2.type = 'sawtooth';
@@ -168,8 +234,9 @@ var Sound = (function () {
     lfo.type = 'sine';
     lfo.frequency.setValueAtTime(19, t);
     lfo.frequency.linearRampToValueAtTime(11, t + dur);
-    lg.gain.value = 28;
+    lg.gain.value = 24;
     lfo.connect(lg); lg.connect(o.frequency); lg.connect(o2.frequency);
+    chaos(t, dur, 14, 26, o.frequency);
 
     var f = c.createBiquadFilter();     // résonance = timbre cuivré
     f.type = 'lowpass';
@@ -236,6 +303,7 @@ var Sound = (function () {
 
   /* --- tambour de suspense --- */
   function boing() {
+    if (sample('boing')) return;
     var c = ac(), t = c.currentTime;
     var o = c.createOscillator(), g = c.createGain();
     o.type = 'triangle';
@@ -250,6 +318,7 @@ var Sound = (function () {
   /* --- le rot : plus lent et plus "mouillé" qu'un prout, et le volume
      lui-même tremble (c'est ce tremblement qui fait le "hroooop") --- */
   function rot() {
+    if (sample('rot')) return;
     var c = ac(), t = c.currentTime, dur = 0.62;
     var o = c.createOscillator();
     o.type = 'sawtooth';
@@ -263,6 +332,7 @@ var Sound = (function () {
     var l2 = c.createOscillator(), g2 = c.createGain();
     l2.type = 'triangle'; l2.frequency.value = 7.3; g2.gain.value = 22;
     l2.connect(g2); g2.connect(o.frequency);
+    chaos(t, dur, 20, 60, o.frequency);
 
     var f = c.createBiquadFilter();
     f.type = 'lowpass';
@@ -288,6 +358,7 @@ var Sound = (function () {
 
   /* --- sifflet qui dégonfle --- */
   function ballon() {
+    if (sample('ballon')) return;
     var c = ac(), t = c.currentTime, dur = 1.1;
     var o = c.createOscillator(), g = c.createGain();
     o.type = 'sawtooth';
