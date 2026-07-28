@@ -150,6 +150,7 @@ Games.ballons = (function () {
   return {
     title: 'Attrape-Ballons', spoken: 'Attrape les ballons',
     emoji: '🎈', color: 'linear-gradient(160deg,#ff6ea9,#c81d6b)',
+    need: 8,
     start: start, stop: stop, repeat: repeat
   };
 })();

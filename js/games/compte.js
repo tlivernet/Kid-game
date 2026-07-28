@@ -1,11 +1,12 @@
 /* ==========================================================================
    Compte les Zigotos 🔢 — combien y en a-t-il ? On touche le bon chiffre.
    Bonus : à chaque réussite, on recompte à voix haute avec l'enfant.
-   6 niveaux : de 5 zigotos bien alignés jusqu'à 20 éparpillés.
+   8 niveaux : de 5 zigotos bien alignés jusqu'à 20 éparpillés, puis
+   deux niveaux de calcul (3 + 2 = ?) avec les objets sous les yeux.
    ========================================================================== */
 Games.compte = (function () {
   var TOTAL = 6;
-  var root, api, level, q, score, n, busy, timer;
+  var root, api, level, q, score, n, a, b, busy, timer;
 
   /* eparpille : aligné, c'est un coup d'œil ; éparpillé, il faut vraiment
      organiser son comptage — c'est là que la difficulté monte. */
@@ -17,8 +18,10 @@ Games.compte = (function () {
       { min: 3, max: 10, choices: 4, eparpille: false, melange: false },
       { min: 5, max: 12, choices: 5, eparpille: true,  melange: false },
       { min: 7, max: 16, choices: 5, eparpille: true,  melange: true  },
-      { min: 9, max: 20, choices: 6, eparpille: true,  melange: true  }
-    ][Math.min(Math.max(lv, 1), 6) - 1];
+      { min: 9, max: 20, choices: 6, eparpille: true,  melange: true  },
+      { min: 3, max: 6,  choices: 4, eparpille: false, melange: false, calcul: true },
+      { min: 5, max: 10, choices: 5, eparpille: false, melange: false, calcul: true }
+    ][Math.min(Math.max(lv, 1), 8) - 1];
   }
 
   function start(_root, _api, lv) {
@@ -36,6 +39,11 @@ Games.compte = (function () {
     api.dots(q, TOTAL);
     var cfg = config(level);
     n = cfg.min + Math.floor(Math.random() * (cfg.max - cfg.min + 1));
+    if (cfg.calcul) {
+      // on coupe le total en deux paquets : jamais de zéro, c'est abstrait
+      a = 1 + Math.floor(Math.random() * (n - 1));
+      b = n - a;
+    }
 
     poser(cfg);
     proposer(cfg);
@@ -46,9 +54,26 @@ Games.compte = (function () {
   function poser(cfg) {
     var zone = document.getElementById('c-zone');
     zone.innerHTML = '';
-    zone.className = 'compte-zone' + (cfg.eparpille ? ' eparpille' : '');
+    zone.className = 'compte-zone' + (cfg.eparpille ? ' eparpille' : '') +
+                     (cfg.calcul ? ' calcul' : '');
     var emo = pick(COMPTE_EMOJIS);
     var taille = n <= 6 ? 11 : (n <= 12 ? 8 : 6.2);
+
+    // mode calcul : deux paquets séparés par un +, et on les voit
+    if (cfg.calcul) {
+      var g1 = el('div', 'paquet'), g2 = el('div', 'paquet');
+      for (var k = 0; k < n; k++) {
+        var z = el('span', 'zigoto', emo);
+        z.style.fontSize = taille + 'vmin';
+        z.style.animationDelay = (k * 0.06) + 's';
+        z.style.setProperty('--rot', (Math.random() * 30 - 15) + 'deg');
+        (k < a ? g1 : g2).appendChild(z);
+      }
+      zone.appendChild(g1);
+      zone.appendChild(el('div', 'signe', '+'));
+      zone.appendChild(g2);
+      return;
+    }
 
     // une grille invisible + du désordre : éparpillé mais jamais superposé
     var cols = Math.max(1, Math.ceil(Math.sqrt(n * 1.6)));
@@ -91,7 +116,14 @@ Games.compte = (function () {
     });
   }
 
-  function repeat() { Voice.say('Combien y en a-t-il ?', { rate: 0.9 }); }
+  function repeat() {
+    if (config(level).calcul) {
+      Voice.say(CHIFFRE_SAY[a] + ' plus ' + CHIFFRE_SAY[b] + ', ça fait combien ?',
+                { rate: 0.85 });
+    } else {
+      Voice.say('Combien y en a-t-il ?', { rate: 0.9 });
+    }
+  }
 
   function answer(btn, v) {
     if (busy) return;
@@ -119,7 +151,9 @@ Games.compte = (function () {
 
     if (i >= zigs.length) {
       api.confetti(12);
-      Voice.say('Ça fait ' + CHIFFRE_SAY[n] + ' ! ' + pick(BRAVOS), {
+      Voice.say((config(level).calcul
+                  ? CHIFFRE_SAY[a] + ' plus ' + CHIFFRE_SAY[b] + ', ça fait '
+                  : 'Ça fait ') + CHIFFRE_SAY[n] + ' ! ' + pick(BRAVOS), {
         then: function () { q++; next(); }
       });
       return;
@@ -143,7 +177,7 @@ Games.compte = (function () {
   return {
     title: 'Compte les Zigotos', spoken: 'Compte les zigotos',
     emoji: '🔢', color: 'linear-gradient(160deg,#3ec6ff,#0b5ea8)',
-    maxLevel: 6,
+    maxLevel: 8,
     start: start, stop: stop, repeat: repeat
   };
 })();

@@ -8,12 +8,13 @@ Games.pendu = (function () {
   var FACES = ['🙂', '😯', '😮', '😳', '😰', '🤢', '💥'];
   var root, api, level, mot, dit, emoji, trouvees, erreurs, over;
 
+  /* 6 paliers : on rallonge les mots ET le clavier petit à petit */
   function motsFor(lv) {
-    var max = [4, 5, 6, 99][Math.min(lv, 4) - 1];
+    var max = [4, 5, 6, 7, 8, 99][Math.min(lv, 6) - 1];
     var list = MOTS.filter(function (w) { return w.m.length <= max; });
     return list.length ? list : MOTS;
   }
-  function nbTouches(lv) { return [9, 11, 13, 15][Math.min(lv, 4) - 1]; }
+  function nbTouches(lv) { return [8, 10, 12, 14, 16, 18][Math.min(lv, 6) - 1]; }
 
   function start(_root, _api, lv) {
     root = _root; api = _api; level = lv;
@@ -89,6 +90,7 @@ Games.pendu = (function () {
   function gagne() {
     over = true;
     document.getElementById('p-img').textContent = emoji;
+    api.flash(emoji + ' ' + mot, 'big');
     document.getElementById('p-guy').textContent = '🥳';
     var stars = erreurs <= 1 ? 3 : (erreurs <= 3 ? 2 : 1);
     Voice.say('Le mot était… ' + dit + ' !', {
@@ -127,6 +129,7 @@ Games.pendu = (function () {
   return {
     title: 'Le Prout-du', spoken: 'Le prout-du',
     emoji: '🎩', color: 'linear-gradient(160deg,#ffb02e,#d1640a)',
+    need: 6, maxLevel: 6,
     start: start, stop: stop, repeat: repeat
   };
 })();

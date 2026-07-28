@@ -93,6 +93,7 @@ Games.jumeaux = (function () {
   return {
     title: 'Les Jumeaux', spoken: 'Les jumeaux',
     emoji: '👯', color: 'linear-gradient(160deg,#33d6a6,#0e7a63)',
+    need: 3,
     start: start, stop: stop, repeat: repeat
   };
 })();

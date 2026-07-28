@@ -36,20 +36,75 @@ var LETTER_LEVELS = [
 /* Mots du Pendu : courts, illustrés, et… quelques mots qui font rire.
    « d » = la façon de DIRE le mot. Sans ça, la synthèse vocale prend
    « ZEBRE » pour un sigle et l'épelle lettre par lettre : il faut lui
-   donner le mot en minuscules et avec ses accents. */
+   donner le mot en minuscules et avec ses accents.
+   « h » = mot écarté du Détective (première lettre muette ou trompeuse). */
 var MOTS = [
+  /* --- les incontournables --- */
   { m: 'CACA', e: '💩', d: 'caca' },        { m: 'PIPI', e: '🚽', d: 'pipi' },
-  { m: 'PROUT', e: '💨', d: 'prout' },      { m: 'CHAT', e: '🐱', d: 'chat' },
-  { m: 'CHIEN', e: '🐶', d: 'chien' },      { m: 'LUNE', e: '🌙', d: 'lune' },
-  { m: 'VELO', e: '🚲', d: 'vélo' },        { m: 'POMME', e: '🍎', d: 'pomme' },
-  { m: 'SOLEIL', e: '☀️', d: 'soleil' },    { m: 'ROBOT', e: '🤖', d: 'robot' },
-  { m: 'PIZZA', e: '🍕', d: 'pizza' },      { m: 'FUSEE', e: '🚀', d: 'fusée' },
-  { m: 'BALLON', e: '🎈', d: 'ballon' },    { m: 'DINO', e: '🦖', d: 'dino' },
+  { m: 'PROUT', e: '💨', d: 'prout' },      { m: 'SLIP', e: '🩲', d: 'slip' },
+  { m: 'ZIZI', e: '🙈', d: 'zizi' },        { m: 'POUBELLE', e: '🗑️', d: 'poubelle' },
+  /* --- animaux --- */
+  { m: 'CHAT', e: '🐱', d: 'chat' },        { m: 'CHIEN', e: '🐶', d: 'chien' },
+  { m: 'VACHE', e: '🐮', d: 'vache' },      { m: 'POULE', e: '🐔', d: 'poule' },
+  { m: 'ZEBRE', e: '🦓', d: 'zèbre' },      { m: 'LION', e: '🦁', d: 'lion' },
+  { m: 'OURS', e: '🐻', d: 'ours' },        { m: 'SINGE', e: '🐵', d: 'singe' },
+  { m: 'SOURIS', e: '🐭', d: 'souris' },    { m: 'LAPIN', e: '🐰', d: 'lapin' },
+  { m: 'CANARD', e: '🦆', d: 'canard' },    { m: 'COCHON', e: '🐷', d: 'cochon' },
+  { m: 'MOUTON', e: '🐑', d: 'mouton' },    { m: 'CHEVAL', e: '🐴', d: 'cheval' },
+  { m: 'POISSON', e: '🐟', d: 'poisson' },  { m: 'ABEILLE', e: '🐝', d: 'abeille' },
+  { m: 'TORTUE', e: '🐢', d: 'tortue' },    { m: 'DAUPHIN', e: '🐬', d: 'dauphin' },
+  { m: 'REQUIN', e: '🦈', d: 'requin' },    { m: 'PAPILLON', e: '🦋', d: 'papillon' },
+  { m: 'DINO', e: '🦖', d: 'dino' },        { m: 'GIRAFE', e: '🦒', d: 'girafe' },
+  { m: 'RENARD', e: '🦊', d: 'renard' },    { m: 'LOUP', e: '🐺', d: 'loup' },
+  { m: 'SERPENT', e: '🐍', d: 'serpent' },  { m: 'KOALA', e: '🐨', d: 'koala' },
+  { m: 'PANDA', e: '🐼', d: 'panda' },      { m: 'PINGOUIN', e: '🐧', d: 'pingouin' },
+  { m: 'ESCARGOT', e: '🐌', d: 'escargot' },{ m: 'CRABE', e: '🦀', d: 'crabe' },
+  { m: 'HIBOU', e: '🦉', d: 'hibou', h: 1 },{ m: 'ELEPHANT', e: '🐘', d: 'éléphant' },
+  { m: 'GRENOUILLE', e: '🐸', d: 'grenouille' },
+  /* --- à manger --- */
+  { m: 'POMME', e: '🍎', d: 'pomme' },      { m: 'BANANE', e: '🍌', d: 'banane' },
+  { m: 'FRAISE', e: '🍓', d: 'fraise' },    { m: 'CERISE', e: '🍒', d: 'cerise' },
+  { m: 'CAROTTE', e: '🥕', d: 'carotte' },  { m: 'PIZZA', e: '🍕', d: 'pizza' },
+  { m: 'GATEAU', e: '🍰', d: 'gâteau' },    { m: 'BONBON', e: '🍬', d: 'bonbon' },
+  { m: 'GLACE', e: '🍦', d: 'glace' },      { m: 'FROMAGE', e: '🧀', d: 'fromage' },
+  { m: 'PAIN', e: '🥖', d: 'pain' },        { m: 'SOUPE', e: '🍲', d: 'soupe' },
+  { m: 'MIEL', e: '🍯', d: 'miel' },        { m: 'CHOCOLAT', e: '🍫', d: 'chocolat' },
+  { m: 'POPCORN', e: '🍿', d: 'popcorn' },  { m: 'SUCETTE', e: '🍭', d: 'sucette' },
+  /* --- objets --- */
+  { m: 'VELO', e: '🚲', d: 'vélo' },        { m: 'TRAIN', e: '🚂', d: 'train' },
+  { m: 'VOITURE', e: '🚗', d: 'voiture' },  { m: 'AVION', e: '✈️', d: 'avion' },
+  { m: 'FUSEE', e: '🚀', d: 'fusée' },      { m: 'BATEAU', e: '⛵', d: 'bateau' },
+  { m: 'BALLON', e: '🎈', d: 'ballon' },    { m: 'ROBOT', e: '🤖', d: 'robot' },
+  { m: 'LIVRE', e: '📕', d: 'livre' },      { m: 'CHAPEAU', e: '🎩', d: 'chapeau' },
+  { m: 'CLE', e: '🔑', d: 'clé' },          { m: 'MAISON', e: '🏠', d: 'maison' },
+  { m: 'ECOLE', e: '🏫', d: 'école' },      { m: 'LIT', e: '🛏️', d: 'lit' },
+  { m: 'TAMBOUR', e: '🥁', d: 'tambour' },  { m: 'CADEAU', e: '🎁', d: 'cadeau' },
+  { m: 'PARAPLUIE', e: '☂️', d: 'parapluie' },
+  /* --- dehors --- */
+  { m: 'SOLEIL', e: '☀️', d: 'soleil' },    { m: 'LUNE', e: '🌙', d: 'lune' },
+  { m: 'ETOILE', e: '⭐', d: 'étoile' },    { m: 'NUAGE', e: '☁️', d: 'nuage' },
+  { m: 'ARBRE', e: '🌳', d: 'arbre' },      { m: 'FLEUR', e: '🌻', d: 'fleur' },
+  { m: 'NEIGE', e: '❄️', d: 'neige' },      { m: 'PLAGE', e: '🏖️', d: 'plage' },
+  { m: 'VOLCAN', e: '🌋', d: 'volcan' },    { m: 'ARCENCIEL', e: '🌈', d: 'arc-en-ciel' },
+  /* --- personnages --- */
   { m: 'PAPA', e: '👨', d: 'papa' },        { m: 'MAMAN', e: '👩', d: 'maman' },
-  { m: 'GATEAU', e: '🍰', d: 'gâteau' },    { m: 'SLIP', e: '🩲', d: 'slip' },
-  { m: 'VACHE', e: '🐮', d: 'vache' },      { m: 'BANANE', e: '🍌', d: 'banane' },
-  { m: 'ETOILE', e: '⭐', d: 'étoile' },    { m: 'POULE', e: '🐔', d: 'poule' },
-  { m: 'TRAIN', e: '🚂', d: 'train' },      { m: 'ZEBRE', e: '🦓', d: 'zèbre' }
+  { m: 'BEBE', e: '👶', d: 'bébé' },        { m: 'MAMIE', e: '👵', d: 'mamie' },
+  { m: 'PAPI', e: '👴', d: 'papi' },        { m: 'PIRATE', e: '🏴\u200d☠️', d: 'pirate' },
+  { m: 'SORCIERE', e: '🧙', d: 'sorcière' },{ m: 'DRAGON', e: '🐉', d: 'dragon' },
+  { m: 'FEE', e: '🧚', d: 'fée' },          { m: 'CLOWN', e: '🤡', d: 'clown' },
+  { m: 'ROI', e: '👑', d: 'roi' },          { m: 'ZOMBIE', e: '🧟', d: 'zombie' },
+  { m: 'FANTOME', e: '👻', d: 'fantôme' },  { m: 'MONSTRE', e: '👹', d: 'monstre' }
+];
+
+/* Autocollants à collectionner : la vraie récompense longue durée.
+   Un enfant range, compare, réclame celui qui manque — ça fait revenir. */
+var AUTOCOLLANTS = [
+  ['🦖', 'Dino'], ['🚀', 'Fusée'], ['🦄', 'Licorne'], ['🐙', 'Poulpe'],
+  ['🍩', 'Donut'], ['👑', 'Couronne'], ['🐉', 'Dragon'], ['🎸', 'Guitare'],
+  ['🦁', 'Lion'], ['🍕', 'Pizza'], ['🤖', 'Robot'], ['🌈', 'Arc-en-ciel'],
+  ['🐢', 'Tortue'], ['⚡', 'Éclair'], ['🎃', 'Citrouille'], ['🦕', 'Diplo'],
+  ['🍄', 'Champi'], ['🐳', 'Baleine'], ['🎪', 'Cirque'], ['🕹️', 'Manette'],
+  ['🦜', 'Perroquet'], ['🏆', 'Trophée'], ['🧙', 'Magicien'], ['💎', 'Diamant']
 ];
 
 /* Chiffres : comment les prononcer + un emoji à compter */

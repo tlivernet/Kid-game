@@ -13,7 +13,7 @@ var GHOST_MS = 150;
 
 var App = (function () {
   var KEY = 'planete-prouts-v1';
-  var state = { stars: 0, proutons: 0, best: {}, level: {} };
+  var state = { stars: 0, proutons: 0, best: {}, level: {}, stickers: [], boss: 0 };
   var current = null;      // jeu en cours
   var currentId = null;
   var seq = 0;             // jeton de session : invalide les callbacks en retard
@@ -28,6 +28,8 @@ var App = (function () {
         state.proutons = s.proutons || 0;
         state.best = s.best || {};
         state.level = s.level || {};
+        state.stickers = s.stickers || [];
+        state.boss = s.boss || 0;
       }
     } catch (e) {}
   }
@@ -35,7 +37,7 @@ var App = (function () {
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
   }
   function reset() {
-    state = { stars: 0, proutons: 0, best: {}, level: {} };
+    state = { stars: 0, proutons: 0, best: {}, level: {}, stickers: [], boss: 0 };
     save(); refreshScore();
   }
 
@@ -47,6 +49,25 @@ var App = (function () {
     if (ok && lv < max) state.level[id] = lv + 1;
     else if (!ok && lv > 1) state.level[id] = lv - 1;
     save();
+  }
+
+  /* ---------- déblocage des jeux ---------- */
+  function unlocked(id) {
+    var g = Games[id];
+    return !g || !g.need || state.stars >= g.need;
+  }
+
+  /* ---------- autocollants ---------- */
+  function giveSticker() {
+    var libres = [];
+    for (var i = 0; i < AUTOCOLLANTS.length; i++) {
+      if (state.stickers.indexOf(i) < 0) libres.push(i);
+    }
+    if (!libres.length) return null;
+    var idx = pick(libres);
+    state.stickers.push(idx);
+    save();
+    return AUTOCOLLANTS[idx];
   }
 
   function addStars(n) {
@@ -135,10 +156,46 @@ var App = (function () {
       box.appendChild(s);
     }
     document.getElementById('win-text').textContent = pick(BRAVOS);
+
+    // 3 étoiles = un autocollant neuf pour la collection
+    var boite = document.getElementById('win-sticker');
+    boite.innerHTML = '';
+    boite.classList.remove('on');
+    var neuf = stars >= 3 ? giveSticker() : null;
+
     show('screen-win');
     Sound.fanfare();
     confetti(60);
-    Voice.say(pick(BRAVOS_DROLES), { pitch: 1.3 });
+
+    if (neuf) {
+      boite.innerHTML = '<div class="ws-label">Nouvel autocollant !</div>' +
+                        '<div class="ws-emoji">' + neuf[0] + '</div>' +
+                        '<div class="ws-name">' + neuf[1] + '</div>';
+      boite.classList.add('on');
+      setTimeout(function () { Sound.sparkle(); confetti(20); }, 900);
+      Voice.say('Bravo ! Tu gagnes un autocollant : ' + neuf[1] + ' !', { pitch: 1.3 });
+    } else {
+      Voice.say(pick(BRAVOS_DROLES), { pitch: 1.3 });
+    }
+
+    annoncerDeblocage();
+  }
+
+  /* Un jeu vient-il de s'ouvrir grâce aux étoiles gagnées ? On le dit fort :
+     c'est le moment le plus motivant de toute la boucle de jeu. */
+  var dejaVus = null;
+  function annoncerDeblocage() {
+    var ouverts = Object.keys(Games).filter(unlocked);
+    if (!dejaVus) { dejaVus = ouverts; return; }
+    var neufs = ouverts.filter(function (id) { return dejaVus.indexOf(id) < 0; });
+    dejaVus = ouverts;
+    if (!neufs.length) return;
+    var g = Games[neufs[0]];
+    setTimeout(function () {
+      flash('🔓 ' + g.emoji + ' ' + g.title, 'big');
+      Sound.sparkle();
+      Voice.say('Nouveau jeu débloqué : ' + (g.spoken || g.title) + ' !');
+    }, 2600);
   }
 
   /* ---------- confettis ---------- */
@@ -180,6 +237,7 @@ var App = (function () {
     level: levelOf,
     bumpLevel: bumpLevel,
     menu: goMenu,
+    sticker: giveSticker,
     alive: function () { return true; }
   };
 
@@ -187,16 +245,28 @@ var App = (function () {
   function buildMenu() {
     var grid = document.getElementById('menu-grid');
     grid.innerHTML = '';
+    dejaVus = Object.keys(Games).filter(unlocked);
     Object.keys(Games).forEach(function (id) {
       var g = Games[id];
+      var ouvert = unlocked(id);
       var card = document.createElement('button');
-      card.className = 'game-card';
+      card.className = 'game-card' + (ouvert ? '' : ' locked') + (g.boss ? ' boss' : '');
       card.style.background = g.color;
-      card.innerHTML =
-        '<div class="card-emoji">' + g.emoji + '</div>' +
-        '<div class="card-title">' + g.title + '</div>' +
-        '<div class="card-lvl">' + '🔥'.repeat(levelOf(id)) + '</div>';
+      card.innerHTML = ouvert
+        ? '<div class="card-emoji">' + g.emoji + '</div>' +
+          '<div class="card-title">' + g.title + '</div>' +
+          '<div class="card-lvl">' + '🔥'.repeat(levelOf(id)) + '</div>'
+        : '<div class="card-emoji">🔒</div>' +
+          '<div class="card-title">' + g.title + '</div>' +
+          '<div class="card-lvl">⭐ ' + g.need + '</div>';
       tap(card, function () {
+        if (!ouvert) {
+          Sound.boing();
+          var reste = g.need - state.stars;
+          flash('🔒 Encore ' + reste + ' ⭐');
+          Voice.say('Il te manque ' + reste + ' étoiles pour ce jeu !');
+          return;
+        }
         Sound.pop();
         Voice.say(g.spoken || g.title);
         play(id);
@@ -205,8 +275,37 @@ var App = (function () {
     });
   }
 
+  /* ---------- album d'autocollants ---------- */
+  function openAlbum() {
+    var ov = el('div', 'gate');
+    var box = el('div', 'gate-box album-box');
+    box.appendChild(el('div', 'gate-title', '🏅 Mes autocollants'));
+    box.appendChild(el('div', 'gate-sub',
+      state.stickers.length + ' sur ' + AUTOCOLLANTS.length));
+    var grille = el('div', 'album');
+    AUTOCOLLANTS.forEach(function (a, i) {
+      var pris = state.stickers.indexOf(i) >= 0;
+      var c = el('div', 'sticker' + (pris ? '' : ' vide'));
+      c.innerHTML = '<span class="st-emoji">' + (pris ? a[0] : '❔') + '</span>' +
+                    '<span class="st-name">' + (pris ? a[1] : '') + '</span>';
+      if (pris) tap(c, function () { Sound.pop(); Voice.say(a[1]); wiggle(c); });
+      grille.appendChild(c);
+    });
+    box.appendChild(grille);
+    var fermer = el('button', 'gate-cancel', '👍 Fermer');
+    tap(fermer, function () { Sound.pop(); if (ov.parentNode) ov.parentNode.removeChild(ov); });
+    box.appendChild(fermer);
+    ov.appendChild(box);
+    tap(ov, function (e) { if (e.target === ov && ov.parentNode) ov.parentNode.removeChild(ov); });
+    document.body.appendChild(ov);
+    Voice.say(state.stickers.length
+      ? 'Tu as ' + state.stickers.length + ' autocollants !'
+      : 'Gagne trois étoiles pour ton premier autocollant !');
+  }
+
   return {
     load: load, save: save, reset: reset,
+    unlocked: unlocked, openAlbum: openAlbum, giveSticker: giveSticker,
     goMenu: goMenu, play: play, replay: replay,
     buildMenu: buildMenu, refreshScore: refreshScore,
     confetti: confetti, flash: flash,

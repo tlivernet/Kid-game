@@ -37,6 +37,8 @@
     if (Math.random() < 0.2) App.confetti(8);
   });
 
+  tap(document.getElementById('btn-album'), function () { Sound.pop(); App.openAlbum(); });
+
   /* --- remise à zéro : une multiplication barre la route aux enfants ---
      (l'appui long ne marchait pas : sur tablette il déclenche le menu
      contextuel du navigateur, qui envoie un pointercancel.) */

@@ -88,12 +88,12 @@ body::before {           /* ciel étoilé animé */
 /* ---------------- menu ---------------- */
 .menu-grid {
   flex: 1; display: grid; gap: 2.4vmin;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);   /* 10 jeux : 3 rangées, zéro scroll */
   padding: 1vmin 3vmin 3vmin;
   align-content: center;
   overflow-y: auto;
 }
-@media (orientation: portrait) { .menu-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (orientation: portrait) { .menu-grid { grid-template-columns: repeat(3, 1fr); } }
 
 .game-card {
   border: none; border-radius: 4vmin; color: #fff; font-family: inherit;
@@ -101,11 +101,11 @@ body::before {           /* ciel étoilé animé */
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 0.8vmin;
   box-shadow: 0 1.4vmin 0 #0006, inset 0 0.8vmin 0 #ffffff33;
-  min-height: 26vmin;
+  min-height: 22vmin;
 }
 .game-card:active { transform: translateY(1vmin) scale(.98); box-shadow: 0 0.4vmin 0 #0006; }
-.card-emoji { font-size: 11vmin; line-height: 1; filter: drop-shadow(0 4px 8px #0006); }
-.card-title { font-size: 3.4vmin; font-weight: 800; text-shadow: 0 2px 4px #0007; }
+.card-emoji { font-size: 9.5vmin; line-height: 1; filter: drop-shadow(0 4px 8px #0006); }
+.card-title { font-size: 2.9vmin; font-weight: 800; text-shadow: 0 2px 4px #0007; }
 .card-lvl { font-size: 2.4vmin; letter-spacing: .3vmin; opacity: .95; min-height: 3vmin; }
 
 /* ---------------- conteneur de jeu ---------------- */
@@ -217,7 +217,10 @@ body::before {           /* ciel étoilé animé */
   font-size: 8vmin; font-weight: 900; color: #ffe97a;
 }
 .slot.found { background: #ffe97a; color: #3a1f00; animation: popok .4s ease; }
-.pendu-keys { display: flex; flex-wrap: wrap; gap: 1.4vmin; justify-content: center; }
+.pendu-keys {
+  display: flex; flex-wrap: wrap; gap: 1.4vmin; justify-content: center;
+  padding: 0 17vmin 2vmin;   /* le coin bas-droit appartient au bouton 💩 */
+}
 .key {
   font-family: inherit; font-weight: 900; font-size: 6vmin; color: #2b0a3d;
   width: 12vmin; height: 12vmin; border: none; border-radius: 2.4vmin;
@@ -373,6 +376,149 @@ body::before {           /* ciel étoilé animé */
 .wiggle { animation: wig .4s ease; }
 @keyframes wig {
   25% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } 75% { transform: rotate(-5deg); }
+}
+
+
+/* ---------------- barre du haut : deux boutons à droite ---------------- */
+.topbar-right { display: flex; gap: 1.5vmin; }
+
+/* ---------------- cartes verrouillées & boss ---------------- */
+.game-card.locked { filter: grayscale(.85) brightness(.6); }
+.game-card.locked .card-emoji { font-size: 9vmin; }
+.game-card.locked .card-lvl { color: #ffe97a; font-size: 3vmin; }
+.game-card.boss {
+  box-shadow: 0 1.4vmin 0 #0006, inset 0 0.8vmin 0 #ffffff33, 0 0 4vmin #ff3b6b99;
+  animation: bossglow 1.8s ease-in-out infinite;
+}
+.game-card.boss.locked { animation: none; }
+@keyframes bossglow { 50% { box-shadow: 0 1.4vmin 0 #0006, inset 0 0.8vmin 0 #ffffff33, 0 0 7vmin #ff3b6b; } }
+
+/* ---------------- autocollant gagné (écran de victoire) ---------------- */
+.win-sticker { display: none; text-align: center; }
+.win-sticker.on { display: block; animation: winpop .6s ease .6s backwards; }
+.ws-label { font-size: 3.2vmin; font-weight: 800; color: #7CFFB2; }
+.ws-emoji { font-size: 14vmin; line-height: 1; animation: hop 1.2s ease infinite; }
+.ws-name { font-size: 3.4vmin; font-weight: 800; }
+
+/* ---------------- album ---------------- */
+.album-box { max-height: 88vh; overflow-y: auto; }
+.album {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 1.6vmin;
+  margin: 2vmin 0;
+}
+@media (orientation: portrait) { .album { grid-template-columns: repeat(4, 1fr); } }
+.sticker {
+  display: flex; flex-direction: column; align-items: center; gap: .4vmin;
+  background: #ffffff1a; border-radius: 2vmin; padding: 1.2vmin .5vmin;
+}
+.sticker.vide { opacity: .35; }
+.st-emoji { font-size: 7vmin; line-height: 1; }
+.st-name { font-size: 1.9vmin; font-weight: 700; }
+
+/* ---------------- Le Détective ---------------- */
+.det-wrap {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 2vmin; min-height: 0;
+}
+.det-loupe {
+  font-size: 22vmin; line-height: 1; border: none; background: none;
+  filter: drop-shadow(0 1vmin 2vmin #0007);
+  animation: float 3s ease-in-out infinite;
+}
+.det-question { font-size: 4.6vmin; font-weight: 800; color: #ffe97a; }
+
+/* ---------------- La Fusée Alphabet ---------------- */
+.fusee-hud {
+  display: flex; align-items: center; justify-content: center; gap: .8vmin;
+  flex-wrap: wrap; background: #00000038; border-radius: 3vmin; padding: 1vmin 2vmin;
+}
+.f-step {
+  font-size: 4.4vmin; font-weight: 900; color: #ffffff55;
+  min-width: 5vmin; text-align: center;
+}
+.f-step.done { color: #7CFFB2; }
+.f-step.now { color: #ffe97a; text-shadow: 0 0 2vmin #ffb02e; transform: scale(1.25); }
+.f-arrow { color: #ffffff33; font-size: 3vmin; }
+.fusee-zone {
+  position: relative; flex: 1; min-height: 0; overflow: hidden;
+  border-radius: 3vmin; background: #ffffff0a;
+}
+.fusee-zone canvas { position: absolute; inset: 0; }
+.star-letter {
+  position: absolute; transform: translate(-50%, -50%);
+  width: 17vmin; height: 17vmin; border-radius: 50%; border: none;
+  font-family: inherit; font-size: 8.5vmin; font-weight: 900; color: #2b1d00;
+  background: radial-gradient(circle at 35% 30%, #fff8c9, #ffc93c 60%, #e08a00);
+  box-shadow: 0 0 3vmin #ffc93c88, inset 0 -1vmin 0 #00000022;
+  animation: drop2 .5s ease backwards;
+}
+.star-letter.visited {
+  background: radial-gradient(circle at 35% 30%, #d6ffe9, #45e39b 60%, #159c63);
+  color: #00301c; box-shadow: 0 0 3vmin #45e39b99;
+}
+.star-letter.helped { animation: hop .6s ease infinite; box-shadow: 0 0 4vmin 1vmin #fff; }
+.rocket {
+  position: absolute; transform: translate(-50%, -50%) rotate(-35deg);
+  font-size: 11vmin; line-height: 1; pointer-events: none;
+  transition: left .45s cubic-bezier(.4,1.6,.5,1), top .45s cubic-bezier(.4,1.6,.5,1);
+  filter: drop-shadow(0 0 2vmin #ffd84d);
+}
+.rocket.decolle { animation: decolle 1.4s ease forwards; }
+@keyframes decolle {
+  to { transform: translate(-50%, -900%) rotate(-35deg) scale(.4); opacity: 0; }
+}
+
+/* ---------------- Le Monstre (boss) ---------------- */
+.boss-scene {
+  display: flex; flex-direction: column; align-items: center; gap: 1vmin;
+  padding-top: 1vmin;
+}
+.boss-vie {
+  display: flex; justify-content: space-between; width: 100%;
+  font-size: 4.4vmin; letter-spacing: .3vmin;
+}
+.boss-vie .perdu { opacity: .25; }
+.boss-monstre {
+  font-size: 30vmin; line-height: 1;
+  filter: drop-shadow(0 1vmin 3vmin #ff3b6b88);
+  animation: float 2.2s ease-in-out infinite;
+  transition: font-size .4s ease;
+}
+.boss-chrono {
+  width: 70%; height: 2.2vmin; border-radius: 999px;
+  background: #ffffff1a; overflow: hidden;
+}
+.boss-chrono > div {
+  height: 100%; width: 0; border-radius: 999px;
+  background: linear-gradient(90deg, #ffe97a, #ff3b6b);
+  transition: width .1s linear;
+}
+.boss-question {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 14vmin; flex-wrap: wrap; gap: 1vmin;
+}
+.bq-emoji, .bq-oreille { font-size: 13vmin; line-height: 1; }
+.bq-grande { font-size: 13vmin; font-weight: 900; color: #ffe97a; line-height: 1; }
+.bq-objets { display: flex; flex-wrap: wrap; gap: .8vmin; justify-content: center; }
+.bq-objets span { font-size: 6.5vmin; line-height: 1; }
+.shake { animation: shake .4s; }
+@keyframes shake {
+  25% { transform: translateX(-2vmin); } 50% { transform: translateX(2vmin); }
+  75% { transform: translateX(-1vmin); }
+}
+
+/* ---------------- calcul (paquets d'objets) ---------------- */
+.compte-zone.calcul {
+  display: flex; flex-direction: row; align-items: center; justify-content: center;
+  gap: 2vmin;
+}
+.compte-zone.calcul .paquet {
+  display: flex; flex-wrap: wrap; gap: 1vmin; justify-content: center;
+  align-items: center; max-width: 38%;
+  background: #ffffff12; border-radius: 3vmin; padding: 2vmin;
+}
+.compte-zone.calcul .signe {
+  font-size: 10vmin; font-weight: 900; color: #ffe97a;
 }
 
 /* ---------------- petits écrans en paysage ---------------- */

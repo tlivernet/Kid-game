@@ -42,7 +42,16 @@ fichier audio à télécharger).
 | 🎩 **Le Prout-du** | Le pendu : trouver les lettres d'un mot | Décomposition d'un mot en lettres |
 | 🔢 **Compte les Zigotos** | Compter des personnages, toucher le bon chiffre | Dénombrement, nombres 1→20 |
 | ✍️ **Tableau Magique** | Tracer la lettre au doigt en suivant le chemin | Geste d'écriture, sens du tracé |
+| 🕵️ **Le Détective** | « Par quelle lettre commence PIZZA ? » | **Relier un son entendu à une lettre** |
+| 🚀 **Fusée Alphabet** | Toucher les lettres dans l'ordre, la fusée trace le chemin | L'ordre de l'alphabet |
+| 👹 **Le Monstre** | Combat de boss : tout y passe, avec 3 vies et un chrono | Révision mélangée sous tension |
 | 💩 **Boîte à Prouts** | Récréation : appuyer sur des boutons rigolos | (rien — c'est la récompense !) |
+
+Les jeux **se débloquent avec les étoiles** (3 ⭐ pour Les Jumeaux, 6 pour le
+Prout-du… 25 pour le Monstre). Au tout début, seules la Dictée, les Zigotos et
+la Boîte à Prouts sont ouvertes : deux jeux, pas dix — on ne noie pas l'enfant,
+et chaque cadenas qui saute devient un petit événement (le jeu l'annonce à voix
+haute).
 
 ---
 
@@ -77,10 +86,25 @@ Chaque jeu a 4 niveaux (les 🔥 sur les cartes du menu). Réussite → on monte
 difficulté → on redescend. Progression : majuscules faciles (A O I S M L) →
 alphabet complet → minuscules → mélange des deux écritures.
 
-*Compte les Zigotos* va plus loin, avec **6 niveaux** : de 5 zigotos bien
-alignés jusqu'à 20 éparpillés en désordre. Les chiffres proposés sont des
-voisins du bon nombre (il faut compter juste, pas à peu près) et sont
+*Compte les Zigotos* va plus loin, avec **8 niveaux** : de 5 zigotos bien
+alignés jusqu'à 20 éparpillés en désordre, puis deux niveaux de **calcul**
+(3 + 2 = ?) où les deux paquets d'objets restent sous les yeux — à cet âge on
+compte avec ses yeux avant de compter dans sa tête. Les chiffres proposés sont
+des voisins du bon nombre (il faut compter juste, pas à peu près) et sont
 **rangés dans l'ordre croissant** pour construire la frise des nombres.
+
+**Trois récompenses qui se cumulent.** Les étoiles ⭐ ouvrent les jeux, les
+proutons 💩 ouvrent les bruits rigolos, et une partie à 3 étoiles offre un
+**autocollant** à collectionner (24 en tout, visibles via le 🏅 du menu). Un
+enfant de 5 ans ne se motive pas pour un score : il se motive pour la
+vignette qui lui manque.
+
+**Le boss.** À 25 étoiles s'ouvre *Le Monstre*, qui mélange les quatre
+compétences (reconnaître, entendre, compter, associer). Il a 5 crânes de vie,
+l'enfant a 3 cœurs, et le monstre grossit quand il gagne un échange. Il
+rapporte 5 étoiles d'un coup. Chaque monstre battu rend le suivant plus
+coriace, et un chrono apparaît à partir du deuxième combat — jamais au
+premier, pour laisser découvrir la règle sans pression.
 
 **Le « l » et le « I » ne sont jamais proposés ensemble**, parce qu'ils se
 dessinent exactement pareil : la question serait indevinable.
@@ -129,7 +153,7 @@ js/audio.js         moteur de sons + voix
 js/data.js          lettres, mots, chiffres, tracés des lettres
 js/core.js          état, sauvegarde, navigation, confettis
 js/boot.js          démarrage et boutons globaux
-js/games/*.js       un fichier par jeu
+js/games/*.js       un fichier par jeu (10 jeux)
 ```
 
 ### Ajouter un jeu
