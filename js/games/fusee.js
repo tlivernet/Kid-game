@@ -36,10 +36,17 @@ Games.fusee = (function () {
     ctx = canvas.getContext('2d');
     rocket = document.getElementById('f-rocket');
 
-    placer(cfg);
+    // On attend que la mise en page soit calculée avant de placer quoi que
+    // ce soit : juste après innerHTML, zone.clientHeight vaut encore 616 au
+    // lieu de 577 (le bandeau du haut n'a pas fini de prendre sa place), et
+    // tout ce qu'on positionne se retrouve décalé vers le bas.
     majHud();
     api.dots(0, suite.length);
-    setTimeout(repeat, 350);
+    requestAnimationFrame(function () {
+      if (over || !zone) return;
+      placer(cfg);
+      setTimeout(repeat, 350);
+    });
   }
 
   /* Les lettres sont posées sur une grille invisible puis bousculées :
@@ -68,10 +75,30 @@ Games.fusee = (function () {
       zone.appendChild(b);
     });
 
-    // la fusée attend en bas, bien visible : l'enfant comprend qu'elle
-    // va se déplacer, et le décollage devient une promesse
+    // la fusée attend en bas, POSÉE SUR LE SOL et entièrement visible :
+    // l'enfant comprend qu'elle va se déplacer, et le décollage devient
+    // une promesse. Position calculée sur sa hauteur réelle, sinon elle
+    // dépassait du cadre en paysage (zone plus basse).
+    // la fusée attend au sol, entièrement visible : l'enfant comprend
+    // qu'elle va se déplacer, et le décollage devient une promesse
+    var haut = rocket.getBoundingClientRect().height || H * 0.2;
     rocket.style.left = (W * 0.5) + 'px';
-    rocket.style.top = (H * 0.94) + 'px';
+    rocket.style.top = (H - haut * 0.55) + 'px';
+  }
+
+  /* La fusée se POSE SUR la bulle comme sur une planète, au lieu d'atterrir
+     en son centre — où la bulle, plus grande, la cachait complètement. */
+  function poserFusee(x, y, btn) {
+    var rayon = (btn.offsetHeight || 0) / 2;
+    var haut = rocket.getBoundingClientRect().height || 0;
+    // elle se pose sur le dôme de la bulle ; sur la rangée du haut il n'y a
+    // pas la place, alors elle chevauche un peu plutôt que de sortir du cadre
+    var cible = Math.max(haut * 0.55, y - rayon - haut * 0.28);
+    rocket.style.left = x + 'px';
+    rocket.style.top = cible + 'px';
+    rocket.classList.remove('pose');
+    void rocket.offsetWidth;
+    rocket.classList.add('pose');
   }
 
   function majHud() {
@@ -112,8 +139,7 @@ Games.fusee = (function () {
       ctx.stroke();
     }
     pos = [x, y];
-    rocket.style.left = x + 'px';
-    rocket.style.top = y + 'px';
+    poserFusee(x, y, btn);
     btn.classList.add('visited');
     btn.classList.remove('helped');
     btn.textContent = suite[idx];

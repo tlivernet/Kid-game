@@ -475,14 +475,21 @@ body::before {           /* ciel étoilé animé */
 }
 .star-letter.helped { animation: hop .6s ease infinite; box-shadow: 0 0 4vmin 1vmin #fff; }
 .rocket {
-  position: absolute; transform: translate(-50%, -50%) rotate(-35deg);
-  font-size: 11vmin; line-height: 1; pointer-events: none;
-  transition: left .45s cubic-bezier(.4,1.6,.5,1), top .45s cubic-bezier(.4,1.6,.5,1);
-  filter: drop-shadow(0 0 2vmin #ffd84d);
+  position: absolute; transform: translate(-50%, -50%) rotate(-18deg);
+  font-size: 12vmin; line-height: 1; pointer-events: none;
+  transition: left .5s cubic-bezier(.4,1.6,.5,1), top .5s cubic-bezier(.4,1.6,.5,1);
+  filter: drop-shadow(0 0.4vmin 1vmin #000a) drop-shadow(0 0 2vmin #ffd84d);
+  z-index: 3;   /* les lettres sont ajoutées après elle : sans ça, elle passe dessous */
+}
+/* petit rebond à l'alunissage */
+.rocket.pose { animation: alunit .5s ease; }
+@keyframes alunit {
+  40% { transform: translate(-50%, -40%) rotate(-18deg) scaleY(.82); }
+  70% { transform: translate(-50%, -54%) rotate(-18deg) scaleY(1.05); }
 }
 .rocket.decolle { animation: decolle 1.4s ease forwards; }
 @keyframes decolle {
-  to { transform: translate(-50%, -900%) rotate(-35deg) scale(.4); opacity: 0; }
+  to { transform: translate(-50%, -900%) rotate(-18deg) scale(.4); opacity: 0; }
 }
 
 /* ---------------- Le Monstre (boss) ---------------- */

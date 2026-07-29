@@ -59,7 +59,7 @@ fichier audio à télécharger).
 | 🔢 **Les Nombres** | Compter, lire un nombre, la suite, additions et soustractions | Dénombrement puis calcul |
 | ✍️ **Tableau Magique** | Tracer la lettre au doigt en suivant le chemin | Geste d'écriture, sens du tracé |
 | 🕵️ **Le Détective** | « Par quelle lettre commence PIZZA ? » puis le mot s'écrit | **Relier un son entendu à une lettre** |
-| 🚀 **Fusée Alphabet** | Toucher les lettres dans l'ordre, la fusée trace le chemin | L'ordre de l'alphabet |
+| 🚀 **Fusée Alphabet** | Toucher les lettres dans l'ordre ; la fusée se pose sur chaque bulle comme sur une planète | L'ordre de l'alphabet |
 | 👹 **Le Monstre** | Combat de boss : tout y passe, avec 3 vies et un chrono | Révision mélangée sous tension |
 | 💩 **Boutique** | Dépenser ses proutons en bruits rigolos et en autocollants | (rien — c'est la récompense !) |
 
