@@ -6,7 +6,7 @@
    changer le numéro de VERSION, sinon les tablettes garderont l'ancienne
    version en cache.
    ========================================================================== */
-var VERSION = 'prouts-v3';
+var VERSION = 'prouts-v4';
 
 var FICHIERS = [
   './',
