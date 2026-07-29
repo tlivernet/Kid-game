@@ -294,7 +294,15 @@ body::before {           /* ciel étoilé animé */
 @keyframes squish { 40% { transform: translateY(1.2vmin) scaleY(.85) scaleX(1.1); } }
 
 /* ---------------- écran de victoire ---------------- */
-.win-screen { align-items: center; justify-content: center; gap: 2vmin; }
+.win-screen {
+  align-items: center; justify-content: center; gap: 2vmin;
+  overflow-y: auto;
+}
+/* Filet de sécurité : sur un contenu plus haut que l'écran, un flex centré
+   rogne le haut ET le bas sans qu'on puisse défiler. Ces marges auto le
+   rendent défilable tout en le gardant centré quand il tient. */
+.win-screen > *:first-child { margin-top: auto; }
+.win-screen > *:last-child { margin-bottom: auto; }
 .win-emoji { font-size: 26vmin; animation: winpop .7s ease; }
 @keyframes winpop { 0% { transform: scale(0) rotate(-90deg); } 60% { transform: scale(1.25) rotate(8deg); } }
 .win-stars { display: flex; gap: 2vmin; }
@@ -641,8 +649,65 @@ body::before {           /* ciel étoilé animé */
   transform: translate(-50%, -50%); font-size: .8em; opacity: .9;
 }
 
+/* ---------------- La Grande Course ---------------- */
+.piste {
+  position: relative; flex: 0 0 auto;
+  background: linear-gradient(180deg, #2b2350, #1a1436);
+  border-radius: 3vmin; padding: 2vmin 2vmin 2vmin 1vmin;
+  display: flex; flex-direction: column; gap: 1.5vmin;
+  overflow: hidden;
+}
+.voie {
+  position: relative; height: 12vmin;
+  border-radius: 2vmin; background: #ffffff0d;
+}
+/* la bande blanche discontinue de la route */
+.voie::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 50%;
+  height: 0.6vmin; transform: translateY(-50%);
+  background: repeating-linear-gradient(90deg,
+              #ffffff33 0 3vmin, transparent 3vmin 6vmin);
+}
+.coureur {
+  position: absolute; top: 50%; left: 0;
+  transform: translateY(-50%);
+  font-size: 10vmin; line-height: 1;
+  transition: left .45s cubic-bezier(.3,1.5,.5,1);
+  filter: drop-shadow(0 0.4vmin 0.8vmin #000a);
+}
+.coureur.fonce { animation: fonce .45s ease; }
+@keyframes fonce {
+  40% { transform: translateY(-50%) scaleX(1.25) scaleY(.85); }
+}
+.arrivee {
+  position: absolute; right: 1.5vmin; top: 50%; transform: translateY(-50%);
+  font-size: 11vmin; line-height: 1; opacity: .9;
+}
+.course-question {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  min-height: 0;
+}
+.cq-oreille, .cq-emoji { font-size: 15vmin; line-height: 1; }
+.cq-oreille { animation: pulse 2s ease-in-out infinite; }
+
 /* ---------------- petits écrans en paysage ---------------- */
 @media (orientation: landscape) and (max-height: 520px) {
   .card-emoji { font-size: 9vmin; }
   .letter-btn { width: 26vmin; height: 26vmin; font-size: 15vmin; }
+}
+
+/* En paysage, 1 vmin = la hauteur/100 : l'écran de victoire (trophée +
+   étoiles + niveau + autocollant + boutons) dépassait de 40 px et se
+   trouvait rogné en haut et en bas. On resserre tout le bloc. */
+@media (orientation: landscape) {
+  .win-screen { gap: 1vmin; }
+  .win-emoji { font-size: 19vmin; }
+  .wstar { font-size: 9vmin; }
+  .win-text { font-size: 6.5vmin; }
+  .win-level.monte { font-size: 5.5vmin; }
+  .win-level.on { font-size: 3.4vmin; }
+  .ws-emoji { font-size: 10vmin; }
+  .ws-label, .ws-name { font-size: 2.8vmin; }
+  .win-btns { margin-top: 1vmin; }
+  .pill-btn { font-size: 4.2vmin; padding: 1.6vmin 5vmin; }
 }

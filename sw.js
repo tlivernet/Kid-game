@@ -6,7 +6,7 @@
    changer le numéro de VERSION, sinon les tablettes garderont l'ancienne
    version en cache.
    ========================================================================== */
-var VERSION = 'prouts-v2';
+var VERSION = 'prouts-v3';
 
 var FICHIERS = [
   './',
@@ -25,6 +25,7 @@ var FICHIERS = [
   './js/games/tableau.js',
   './js/games/detective.js',
   './js/games/fusee.js',
+  './js/games/course.js',
   './js/games/boss.js',
   './js/games/prouts.js',
   './sons/sons.js',

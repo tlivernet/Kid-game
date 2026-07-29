@@ -60,11 +60,12 @@ fichier audio à télécharger).
 | ✍️ **Tableau Magique** | Tracer la lettre au doigt en suivant le chemin | Geste d'écriture, sens du tracé |
 | 🕵️ **Le Détective** | « Par quelle lettre commence PIZZA ? » puis le mot s'écrit | **Relier un son entendu à une lettre** |
 | 🚀 **Fusée Alphabet** | Toucher les lettres dans l'ordre ; la fusée se pose sur chaque bulle comme sur une planète | L'ordre de l'alphabet |
+| 🏁 **La Grande Course** | Course contre le monstre : chaque bonne réponse fait avancer la voiture | **Reconnaître vite**, pas seulement reconnaître |
 | 👹 **Le Monstre** | Combat de boss : tout y passe, avec 3 vies et un chrono | Révision mélangée sous tension |
 | 💩 **Boutique** | Dépenser ses proutons en bruits rigolos et en autocollants | (rien — c'est la récompense !) |
 
 Les jeux **se débloquent avec les étoiles** (3 ⭐ pour Les Jumeaux, 6 pour le
-Prout-du… 25 pour le Monstre). Au tout début, seules la Dictée, les Zigotos et
+Prout-du, 10 pour la Course… 25 pour le Monstre). Au tout début, seules la Dictée, les Zigotos et
 la Boîte à Prouts sont ouvertes : deux jeux, pas dix — on ne noie pas l'enfant,
 et chaque cadenas qui saute devient un petit événement (le jeu l'annonce à voix
 haute).
@@ -138,6 +139,13 @@ d'être puni.
   la réponse au « il ne joue qu'à trois jeux » : on ne l'oblige à rien, on lui
   donne une raison d'aller voir ailleurs, payée en proutons. Toucher une
   mission lance directement le jeu concerné.
+
+**La course.** C'est le seul jeu où **ne rien faire fait perdre du terrain** :
+le monstre avance tout seul toutes les 4 à 7 secondes selon le niveau. On ne
+cherche donc plus seulement à reconnaître la lettre, mais à la reconnaître
+**vite** — c'est exactement le passage du déchiffrage laborieux à la lecture.
+Une erreur fait avancer le monstre ; une bonne réponse relance son compteur,
+donc bien répondre soulage vraiment.
 
 **Le boss.** À 25 étoiles s'ouvre *Le Monstre*, qui mélange les quatre
 compétences (reconnaître, entendre, compter, associer). Il a 5 crânes de vie,
