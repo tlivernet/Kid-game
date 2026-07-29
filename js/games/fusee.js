@@ -18,8 +18,10 @@ Games.fusee = (function () {
   function start(_root, _api, lv) {
     root = _root; api = _api; level = lv; over = false;
     var cfg = config(lv);
+    var departs = [];
+    for (var k = 0; k <= 26 - cfg.n; k++) departs.push(k);
     var d = cfg.depart >= 0 ? cfg.depart
-                            : Math.floor(Math.random() * (26 - cfg.n));
+                            : Number(Sacs.tirer('fusee-n' + lv, departs));
     suite = ALPHABET.slice(d, d + cfg.n);
     idx = 0; erreurs = 0; pos = null;
 

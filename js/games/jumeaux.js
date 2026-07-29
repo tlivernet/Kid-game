@@ -11,7 +11,8 @@ Games.jumeaux = (function () {
     root = _root; api = _api; level = lv;
     pairs = nbPairs(lv); found = 0; wrong = 0; first = null; lock = false;
 
-    var pool = shuffle(noAmbig(LETTER_LEVELS[Math.min(lv, 4) - 1])).slice(0, pairs);
+    var pool = Sacs.tirerPlusieurs('jumeaux-n' + lv,
+                 noAmbig(LETTER_LEVELS[Math.min(lv, 4) - 1]), pairs);
     cards = [];
     pool.forEach(function (L) {
       cards.push({ L: L, txt: L, kind: 'M' });

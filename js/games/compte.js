@@ -38,7 +38,9 @@ Games.compte = (function () {
     busy = false;
     api.dots(q, TOTAL);
     var cfg = config(level);
-    n = cfg.min + Math.floor(Math.random() * (cfg.max - cfg.min + 1));
+    var possibles = [];
+    for (var v = cfg.min; v <= cfg.max; v++) possibles.push(v);
+    n = Number(Sacs.tirer('compte-n' + level, possibles));
     if (cfg.calcul) {
       // on coupe le total en deux paquets : jamais de zéro, c'est abstrait
       a = 1 + Math.floor(Math.random() * (n - 1));

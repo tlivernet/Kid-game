@@ -11,14 +11,14 @@ Games.pendu = (function () {
   /* 6 paliers : on rallonge les mots ET le clavier petit à petit */
   function motsFor(lv) {
     var max = [4, 5, 6, 7, 8, 99][Math.min(lv, 6) - 1];
-    var list = MOTS.filter(function (w) { return w.m.length <= max; });
-    return list.length ? list : MOTS;
+    var list = TOUS_LES_MOTS.filter(function (w) { return w.m.length <= max; });
+    return list.length ? list : TOUS_LES_MOTS;
   }
   function nbTouches(lv) { return [8, 10, 12, 14, 16, 18][Math.min(lv, 6) - 1]; }
 
   function start(_root, _api, lv) {
     root = _root; api = _api; level = lv;
-    var w = pick(motsFor(lv));
+    var w = Sacs.tirer('pendu', motsFor(lv), function (x) { return x.m; });
     mot = w.m; dit = w.d || w.m.toLowerCase(); emoji = w.e;
     trouvees = {}; erreurs = 0; over = false;
 
@@ -89,15 +89,16 @@ Games.pendu = (function () {
 
   function gagne() {
     over = true;
-    document.getElementById('p-img').textContent = emoji;
-    api.flash(emoji + ' ' + mot, 'big');
+    // certains mots n'ont pas d'image : c'est le mot écrit qui fait la fête
+    document.getElementById('p-img').textContent = emoji || '🎉';
+    api.flash((emoji ? emoji + ' ' : '') + mot, 'big');
     document.getElementById('p-guy').textContent = '🥳';
     var stars = erreurs <= 1 ? 3 : (erreurs <= 3 ? 2 : 1);
     Voice.say('Le mot était… ' + dit + ' !', {
       then: function () {
         if (!api.alive()) return;
         api.bumpLevel('pendu', erreurs <= 2);
-        api.win(stars, emoji);
+        api.win(stars, emoji || '🎩');
       }
     });
   }
@@ -105,7 +106,7 @@ Games.pendu = (function () {
   function perdu() {
     over = true;
     document.getElementById('p-guy').textContent = '💨';
-    document.getElementById('p-img').textContent = emoji;
+    document.getElementById('p-img').textContent = emoji || '🎉';
     Sound.prout(0.9);
     api.flash('PROUT !!! 💨', 'big');
     // on révèle tout : l'enfant repart avec le mot en tête

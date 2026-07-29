@@ -17,8 +17,9 @@ Games.detective = (function () {
 
   /* On écarte les mots dont la première lettre ne s'entend pas (HIBOU) */
   function motsOk() {
-    return MOTS.filter(function (w) { return !w.h && w.m.length >= 3; });
+    return TOUS_LES_MOTS.filter(function (w) { return !w.h && w.m.length >= 3; });
   }
+  function cle(w) { return w.m; }
 
   function start(_root, _api, lv) {
     root = _root; api = _api; level = lv; q = 0; score = 0;
@@ -26,6 +27,7 @@ Games.detective = (function () {
       '<div class="det-wrap">' +
         '<div class="det-loupe" id="d-img">🔍</div>' +
         '<div class="det-question" id="d-q"></div>' +
+        '<div class="det-mot" id="d-mot"></div>' +
         '<div class="choices" id="d-choices"></div>' +
       '</div>';
     tap(document.getElementById('d-img'), function () { repeat(); });
@@ -40,7 +42,8 @@ Games.detective = (function () {
 
     var cfg = config(level);
     var liste = motsOk();
-    mot = pick(liste);
+    // sac sans remise : un même mot ne peut plus tomber deux fois de suite
+    mot = Sacs.tirer('detective', liste, cle);
     // au niveau 4, on demande parfois la DERNIÈRE lettre
     var chercheFin = cfg.fin && Math.random() < 0.4;
     cible = chercheFin ? mot.m[mot.m.length - 1] : mot.m[0];
@@ -50,9 +53,11 @@ Games.detective = (function () {
       .filter(function (L) { return L !== cible; });
     var opts = shuffle([cible].concat(autres.slice(0, cfg.choices - 1)));
 
-    document.getElementById('d-img').textContent = mot.e;
+    // pas d'emoji pour ce mot ? l'oreille prend le relais, le mot est dit
+    document.getElementById('d-img').textContent = mot.e || '👂';
     document.getElementById('d-q').textContent =
       (chercheFin ? 'Ça finit par…' : 'Ça commence par…');
+    document.getElementById('d-mot').innerHTML = '';
     mot.fin = chercheFin;
 
     var box = document.getElementById('d-choices');
@@ -92,6 +97,7 @@ Games.detective = (function () {
       Sound.good();
       api.confetti(14);
       if (tries === 0) score++;
+      ecrireMot();
       Voice.say(mot.d + ' ! ' + LETTER_SAY[cible] + ' ! ' + pick(BRAVOS), {
         then: function () { q++; next(); }
       });
@@ -110,6 +116,24 @@ Games.detective = (function () {
         Voice.say(pick(ENCOURAGEMENTS));
       }
     }
+  }
+
+  /* Une fois la lettre trouvée, on ÉCRIT le mot en entier avec la lettre
+     devinée mise en avant : l'enfant voit enfin à quoi sert sa réponse, et
+     il rencontre le mot écrit sans qu'on lui demande de le lire. */
+  function ecrireMot() {
+    var boite = document.getElementById('d-mot');
+    if (!boite) return;
+    var pos = mot.fin ? mot.m.length - 1 : 0;
+    boite.innerHTML = '';
+    // les mots longs rétrécissent pour tenir sur une seule ligne
+    var taille = Math.min(7.5, 82 / mot.m.length);
+    mot.m.split('').forEach(function (L, i) {
+      var c = el('span', 'dm-lettre' + (i === pos ? ' trouvee' : ''), L);
+      c.style.fontSize = taille + 'vmin';
+      c.style.animationDelay = (i * 0.06) + 's';
+      boite.appendChild(c);
+    });
   }
 
   function finish() {

@@ -107,6 +107,65 @@ var AUTOCOLLANTS = [
   ['🦜', 'Perroquet'], ['🏆', 'Trophée'], ['🧙', 'Magicien'], ['💎', 'Diamant']
 ];
 
+
+/* Mots SANS emoji : rien ne les illustre, mais ils sont dits à voix haute et
+   maintenant écrits en toutes lettres dès qu'ils sont trouvés. C'est ce qui
+   permet d'ouvrir le vocabulaire au-delà de ce qu'Unicode sait dessiner. */
+var MOTS_SIMPLES = [
+  /* le corps */
+  ['MAIN','main'], ['PIED','pied'], ['TETE','tête'], ['BRAS','bras'],
+  ['JAMBE','jambe'], ['DENT','dent'], ['NEZ','nez'], ['DOIGT','doigt'],
+  ['GENOU','genou'], ['VENTRE','ventre'], ['EPAULE','épaule'], ['COUDE','coude'],
+  /* la maison */
+  ['PORTE','porte'], ['MUR','mur'], ['TOIT','toit'], ['SALON','salon'],
+  ['CUISINE','cuisine'], ['JARDIN','jardin'], ['ESCALIER','escalier'],
+  ['FENETRE','fenêtre'], ['PLACARD','placard'], ['TAPIS','tapis'],
+  ['COUSSIN','coussin'], ['LAMPE','lampe'], ['MIROIR','miroir'],
+  ['BAIGNOIRE','baignoire'], ['BROSSE','brosse'], ['SAVON','savon'],
+  ['SERVIETTE','serviette'], ['ASSIETTE','assiette'], ['CUILLERE','cuillère'],
+  ['FOURCHETTE','fourchette'], ['CASSEROLE','casserole'], ['BOL','bol'],
+  /* l'école */
+  ['CAHIER','cahier'], ['CRAYON','crayon'], ['GOMME','gomme'], ['COLLE','colle'],
+  ['CISEAUX','ciseaux'], ['CARTABLE','cartable'], ['MAITRESSE','maîtresse'],
+  ['COPAIN','copain'], ['RECREATION','récréation'], ['DESSIN','dessin'],
+  ['PEINTURE','peinture'], ['PINCEAU','pinceau'], ['FEUTRE','feutre'],
+  ['REGLE','règle'], ['CLASSE','classe'], ['TABLEAU','tableau'],
+  /* dehors */
+  ['ROUTE','route'], ['PONT','pont'], ['RIVIERE','rivière'], ['CHEMIN','chemin'],
+  ['FORET','forêt'], ['CHAMP','champ'], ['PRAIRIE','prairie'], ['CAILLOU','caillou'],
+  ['SABLE','sable'], ['BOUE','boue'], ['FLAQUE','flaque'], ['VENT','vent'],
+  ['ORAGE','orage'], ['BROUILLARD','brouillard'], ['SAISON','saison'],
+  ['PRINTEMPS','printemps'], ['MONTAGNE','montagne'], ['VILLAGE','village'],
+  /* actions et vie quotidienne */
+  ['REPAS','repas'], ['GOUTER','goûter'], ['SIESTE','sieste'], ['BISOU','bisou'],
+  ['CALIN','câlin'], ['SOURIRE','sourire'], ['RIRE','rire'], ['DODO','dodo'],
+  ['JEU','jeu'], ['CADENAS','cadenas'], ['SECRET','secret'], ['SURPRISE','surprise'],
+  ['ANNIVERSAIRE','anniversaire'], ['VACANCES','vacances'], ['VOYAGE','voyage'],
+  ['CHANSON','chanson'], ['MUSIQUE','musique'], ['DANSE','danse'],
+  ['HISTOIRE','histoire', 1], ['IMAGE','image'], ['COULEUR','couleur'],
+  /* couleurs */
+  ['ROUGE','rouge'], ['VERT','vert'], ['BLEU','bleu'], ['JAUNE','jaune'],
+  ['NOIR','noir'], ['BLANC','blanc'], ['ROSE','rose'], ['MARRON','marron'],
+  ['VIOLET','violet'], ['ORANGE','orange'], ['GRIS','gris'],
+  /* animaux sans emoji dédié */
+  ['MOUCHE','mouche'], ['FOURMI','fourmi'], ['CHENILLE','chenille'],
+  ['MOINEAU','moineau'], ['CORBEAU','corbeau'], ['TAUPE','taupe'],
+  ['BICHE','biche'], ['SANGLIER','sanglier'], ['LEZARD','lézard'],
+  ['CRAPAUD','crapaud'], ['PIGEON','pigeon'], ['MOUETTE','mouette'],
+  /* nourriture sans emoji dédié */
+  ['PUREE','purée'], ['NOUILLE','nouille'], ['JAMBON','jambon'],
+  ['YAOURT','yaourt'], ['COMPOTE','compote'], ['SIROP','sirop'],
+  ['CONFITURE','confiture'], ['BEURRE','beurre'], ['SUCRE','sucre'],
+  ['SALADE','salade'], ['RADIS','radis'], ['COURGETTE','courgette'],
+  ['POIREAU','poireau'], ['GALETTE','galette'], ['CREPE','crêpe'],
+  ['BISCUIT','biscuit'], ['TARTINE','tartine'], ['LIMONADE','limonade']
+].map(function (w) {
+  return { m: w[0], d: w[1], e: '', h: w[2] || 0 };
+});
+
+/* La liste complète : illustrés d'abord, puis tous les autres. */
+var TOUS_LES_MOTS = MOTS.concat(MOTS_SIMPLES);
+
 /* Chiffres : comment les prononcer + un emoji à compter */
 var CHIFFRE_SAY = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq',
                    'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze',
@@ -133,12 +192,63 @@ var ENCOURAGEMENTS = [
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
+/* ==========================================================================
+   Tirage SANS REMISE — le hasard pur reproposait trois fois le même mot dans
+   une seule partie, ce qui donne l'impression d'un jeu pauvre. Ici chaque
+   « sac » distribue tout son contenu avant d'être remélangé, et le dernier
+   tiré ne peut pas revenir immédiatement après le remélange.
+   Les sacs vivent tant que la page est ouverte : deux parties d'affilée ne
+   redonnent donc pas les mêmes mots non plus.
+   ========================================================================== */
+var Sacs = (function () {
+  var sacs = {};
+
+  function tirer(nom, items, cle) {
+    if (!items || !items.length) return null;
+    cle = cle || String;
+    // signature triée : le sac ne doit pas se réinitialiser simplement
+    // parce que l'appelant lui a passé la même liste dans un autre ordre
+    var sig = items.map(cle).slice().sort().join('|');
+    var s = sacs[nom];
+    if (!s || s.sig !== sig) s = sacs[nom] = { sig: sig, reste: [], dernier: null };
+
+    if (!s.reste.length) {
+      s.reste = shuffle(items);
+      // on ne recommence pas par celui qu'on vient de donner
+      if (s.reste.length > 1 && cle(s.reste[0]) === s.dernier) {
+        s.reste.push(s.reste.shift());
+      }
+    }
+    var x = s.reste.shift();
+    s.dernier = cle(x);
+    return x;
+  }
+
+  /* Tire n éléments différents d'un coup (pour remplir une grille) */
+  function tirerPlusieurs(nom, items, n, cle) {
+    var out = [];
+    for (var i = 0; i < n && i < items.length; i++) {
+      var x = tirer(nom, items, cle);
+      // on ne veut pas deux fois le même DANS la même grille
+      var k = (cle || String)(x), essais = 0;
+      while (out.some(function (y) { return (cle || String)(y) === k; }) && essais++ < items.length) {
+        x = tirer(nom, items, cle);
+        k = (cle || String)(x);
+      }
+      out.push(x);
+    }
+    return out;
+  }
+
+  return { tirer: tirer, tirerPlusieurs: tirerPlusieurs };
+})();
+
 /* Le « l » minuscule et le « I » majuscule se dessinent pareil : on ne les
    met JAMAIS dans le même exercice, sinon la bonne réponse est indevinable. */
+var LETTRE_ECARTEE = Math.random() < 0.5 ? 'I' : 'L';   // tirée une fois par session
 function noAmbig(list) {
   if (list.indexOf('I') >= 0 && list.indexOf('L') >= 0) {
-    var drop = Math.random() < 0.5 ? 'I' : 'L';
-    return list.filter(function (x) { return x !== drop; });
+    return list.filter(function (x) { return x !== LETTRE_ECARTEE; });
   }
   return list;
 }

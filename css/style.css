@@ -421,11 +421,28 @@ body::before {           /* ciel étoilé animé */
   justify-content: center; gap: 2vmin; min-height: 0;
 }
 .det-loupe {
-  font-size: 22vmin; line-height: 1; border: none; background: none;
+  font-size: 18vmin; line-height: 1; border: none; background: none;
   filter: drop-shadow(0 1vmin 2vmin #0007);
   animation: float 3s ease-in-out infinite;
 }
-.det-question { font-size: 4.6vmin; font-weight: 800; color: #ffe97a; }
+.det-question { font-size: 4.4vmin; font-weight: 800; color: #ffe97a; }
+
+/* le mot écrit une fois la lettre trouvée */
+.det-mot {
+  display: flex; gap: 0.8vmin; justify-content: center; flex-wrap: wrap;
+  min-height: 11vmin; align-items: center;
+  width: 100%;   /* sinon la boîte se rétrécit et chaque lettre part à la ligne */
+}
+.dm-lettre {
+  font-weight: 900; color: #fff; line-height: 1;
+  background: #ffffff14; border-radius: 1.4vmin;
+  padding: 1vmin 1.4vmin;
+  animation: popok .5s ease backwards;
+}
+.dm-lettre.trouvee {
+  background: #ffe97a; color: #3a1f00;
+  box-shadow: 0 0 2.5vmin #ffe97a;
+}
 
 /* ---------------- La Fusée Alphabet ---------------- */
 .fusee-hud {

@@ -36,9 +36,7 @@ Games.ballons = (function () {
 
   function newTarget() {
     var cfg = CFG;
-    var t;
-    do { t = pick(cfg.pool); } while (t === target && cfg.pool.length > 1);
-    target = t;
+    target = Sacs.tirer('ballons-n' + level, cfg.pool);
     hud.innerHTML = '<span class="hud-lbl">Éclate&nbsp;:</span>' +
                     '<span class="hud-letter">' + target + '</span>' +
                     '<span class="hud-letter small">' + target.toLowerCase() + '</span>';

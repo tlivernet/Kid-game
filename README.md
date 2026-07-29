@@ -58,7 +58,7 @@ fichier audio à télécharger).
 | 🎩 **Le Prout-du** | Le pendu : trouver les lettres d'un mot | Décomposition d'un mot en lettres |
 | 🔢 **Compte les Zigotos** | Compter des personnages, toucher le bon chiffre | Dénombrement, nombres 1→20 |
 | ✍️ **Tableau Magique** | Tracer la lettre au doigt en suivant le chemin | Geste d'écriture, sens du tracé |
-| 🕵️ **Le Détective** | « Par quelle lettre commence PIZZA ? » | **Relier un son entendu à une lettre** |
+| 🕵️ **Le Détective** | « Par quelle lettre commence PIZZA ? » puis le mot s'écrit | **Relier un son entendu à une lettre** |
 | 🚀 **Fusée Alphabet** | Toucher les lettres dans l'ordre, la fusée trace le chemin | L'ordre de l'alphabet |
 | 👹 **Le Monstre** | Combat de boss : tout y passe, avec 3 vies et un chrono | Révision mélangée sous tension |
 | 💩 **Boîte à Prouts** | Récréation : appuyer sur des boutons rigolos | (rien — c'est la récompense !) |
@@ -124,6 +124,20 @@ premier, pour laisser découvrir la règle sans pression.
 
 **Le « l » et le « I » ne sont jamais proposés ensemble**, parce qu'ils se
 dessinent exactement pareil : la question serait indevinable.
+
+**Aucune répétition dans une partie.** Le hasard pur reproposait trois fois le
+même mot en huit questions, ce qui fait paraître le jeu pauvre. Chaque jeu
+puise maintenant dans un « sac » qui distribue *tout* son contenu avant d'être
+remélangé, et le dernier tiré ne peut pas revenir juste après. Les sacs vivent
+tant que la page est ouverte : deux parties d'affilée ne redonnent donc pas la
+même chose non plus.
+
+**226 mots**, dont la moitié sans image. Un emoji n'existe pas pour *escalier*,
+*récréation* ou *jaune* : ces mots-là sont dits à voix haute (l'oreille 👂
+remplace l'image) et **écrits en toutes lettres** dès que la réponse est
+trouvée. C'est ce qui permet d'ouvrir le vocabulaire au-delà de ce qu'Unicode
+sait dessiner — et l'enfant croise le mot écrit sans qu'on lui demande de le
+lire.
 
 ---
 

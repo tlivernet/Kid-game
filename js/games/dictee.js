@@ -39,9 +39,12 @@ Games.dictee = (function () {
     api.dots(q, TOTAL);
 
     var cfg = config(level);
-    var pool = shuffle(cfg.casing === 'upper' ? cfg.pool : noAmbig(cfg.pool));
-    target = pool[0];
-    var others = pool.filter(function (l) { return l !== target; }).slice(0, cfg.choices - 1);
+    // liste stable pour le sac ; le mélange ne sert qu'à placer les boutons
+    var base = cfg.casing === 'upper' ? cfg.pool : noAmbig(cfg.pool);
+    // sac sans remise : toutes les lettres passent avant qu'une revienne
+    target = Sacs.tirer('dictee-n' + level, base);
+    var others = shuffle(base.filter(function (l) { return l !== target; }))
+                   .slice(0, cfg.choices - 1);
     var all = shuffle([target].concat(others));
 
     document.getElementById('d-hint').textContent = '';

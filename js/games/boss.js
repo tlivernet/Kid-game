@@ -71,12 +71,14 @@ Games.boss = (function () {
   }
 
   function fabriquer() {
-    var types = ['lettre', 'compte', 'debut', 'paire'];
-    var t = pick(types);
+    // les quatre familles défilent en boucle : plus de « trois fois la même »
+    var t = Sacs.tirer('boss-types', ['lettre', 'compte', 'debut', 'paire']);
     var pool = LETTER_LEVELS[Math.min(3, 1 + Math.floor(level / 2))];
 
     if (t === 'compte') {
-      var n = 3 + Math.floor(Math.random() * 10);
+      var nombres = [];
+      for (var v = 3; v <= 12; v++) nombres.push(v);
+      var n = Number(Sacs.tirer('boss-nombres', nombres));
       var emo = pick(COMPTE_EMOJIS);
       var opts = [n];
       [n - 1, n + 1, n - 2, n + 2].forEach(function (v) {
@@ -92,11 +94,13 @@ Games.boss = (function () {
     }
 
     if (t === 'debut') {
-      var w = pick(MOTS.filter(function (x) { return !x.h && x.m.length >= 3; }));
+      var w = Sacs.tirer('boss-mots',
+                TOUS_LES_MOTS.filter(function (x) { return !x.h && x.m.length >= 3; }),
+                function (x) { return x.m; });
       var L = w.m[0];
       var autres = shuffle(ALPHABET.filter(function (x) { return x !== L; })).slice(0, 3);
       return {
-        affiche: '<div class="bq-emoji">' + w.e + '</div>',
+        affiche: '<div class="bq-emoji">' + (w.e || '👂') + '</div>',
         dit: w.d + ' ! Ça commence par quelle lettre ?',
         opts: shuffle([L].concat(autres)),
         bon: L
@@ -104,8 +108,11 @@ Games.boss = (function () {
     }
 
     if (t === 'paire') {
-      var P = pick(noAmbig(pool));
-      var autresP = shuffle(noAmbig(ALPHABET).filter(function (x) { return x !== P; })).slice(0, 3);
+      // toutes les réponses sont en minuscules ici : le « i » a son point,
+      // il ne peut pas être confondu avec le « l ». Pas de noAmbig, donc
+      // une liste stable pour le sac.
+      var P = Sacs.tirer('boss-paires', pool);
+      var autresP = shuffle(ALPHABET.filter(function (x) { return x !== P; })).slice(0, 3);
       return {
         affiche: '<div class="bq-grande">' + P + '</div>',
         dit: 'Trouve la petite lettre de ' + LETTER_SAY[P],
@@ -114,7 +121,7 @@ Games.boss = (function () {
       };
     }
 
-    var C = pick(pool);
+    var C = Sacs.tirer('boss-lettres', pool);
     var autresC = shuffle(pool.filter(function (x) { return x !== C; })).slice(0, 3);
     return {
       affiche: '<div class="bq-oreille">👂</div>',

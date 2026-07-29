@@ -38,7 +38,8 @@ Games.tableau = (function () {
   function start(_root, _api, lv) {
     root = _root; api = _api; level = lv; over = false;
     var span = [6, 12, 18, TRACE_ORDER.length][Math.min(lv, 4) - 1];
-    letters = shuffle(TRACE_ORDER.slice(0, span)).slice(0, PAR_PARTIE);
+    letters = Sacs.tirerPlusieurs('tableau-n' + lv,
+                TRACE_ORDER.slice(0, span), PAR_PARTIE);
     li = 0;
 
     root.innerHTML =
