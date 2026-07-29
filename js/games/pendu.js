@@ -122,7 +122,7 @@ Games.pendu = (function () {
 
   function repeat() {
     if (!mot) return;
-    Voice.say('Trouve les lettres du mot… ' + dit, { rate: 0.85 });
+    Voice.say('Trouve les lettres du mot… ' + dit, { rate: 0.85, coupe: true });
   }
 
   function stop() { mot = null; over = true; }

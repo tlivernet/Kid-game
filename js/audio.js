@@ -441,30 +441,64 @@ var Voice = (function () {
   }
 
   /* say("Touche la lettre Bé", {rate:0.9, then:fn}) */
+  /* ------------------------------------------------------------------
+     FILE D'ATTENTE. Avant, chaque say() commençait par cancel() : la
+     phrase en cours était coupée net par la suivante, et en fin de partie
+     le « bravo » se faisait tronquer par l'annonce de déblocage.
+     Maintenant les phrases s'enchaînent. Pour couper volontairement (le
+     joueur vient d'agir, la consigne précédente n'a plus d'intérêt), on
+     passe { coupe: true }.
+     ------------------------------------------------------------------ */
+  var file = [], enCours = false;
+
   function say(text, opts) {
     opts = opts || {};
-    if (!enabled) { if (opts.then) setTimeout(opts.then, 400); return; }
+    if (!enabled) {
+      if (opts.coupe) file.length = 0;
+      if (opts.then) setTimeout(opts.then, 350);
+      return;
+    }
+    if (opts.coupe) {
+      file.length = 0;
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+      enCours = false;
+    }
+    file.push({ text: text, opts: opts });
+    if (file.length > 4) file.splice(0, file.length - 4);   // jamais de bouchon
+    if (!enCours) suivant();
+  }
+
+  function suivant() {
+    if (!file.length) { enCours = false; return; }
+    enCours = true;
+    var item = file.shift();
+    var fini = false;
+    function apres() {
+      if (fini) return;
+      fini = true;
+      if (item.opts.then) { try { item.opts.then(); } catch (e) {} }
+      suivant();
+    }
     try {
-      window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(text);
+      var u = new SpeechSynthesisUtterance(item.text);
       if (!voice) pick();
       if (voice) u.voice = voice;
       u.lang = (voice && voice.lang) || 'fr-FR';
-      u.rate = opts.rate || 0.92;
-      u.pitch = opts.pitch === undefined ? 1.15 : opts.pitch;
+      u.rate = item.opts.rate || 0.92;
+      u.pitch = item.opts.pitch === undefined ? 1.15 : item.opts.pitch;
       u.volume = 1;
-      if (opts.then) {
-        var done = false;
-        u.onend = function () { if (!done) { done = true; opts.then(); } };
-        // filet de sécurité : certaines tablettes n'émettent jamais onend
-        setTimeout(function () { if (!done) { done = true; opts.then(); } },
-                   700 + text.length * 90);
-      }
+      u.onend = apres;
+      u.onerror = apres;
+      // filet de sécurité : certaines tablettes n'émettent jamais onend.
+      // Large exprès — mieux vaut un blanc qu'une phrase coupée.
+      setTimeout(apres, 1200 + item.text.length * 120);
       window.speechSynthesis.speak(u);
-    } catch (e) { if (opts.then) setTimeout(opts.then, 400); }
+    } catch (e) { setTimeout(apres, 350); }
   }
 
   function stop() {
+    file.length = 0;
+    enCours = false;
     if (enabled) { try { window.speechSynthesis.cancel(); } catch (e) {} }
   }
 

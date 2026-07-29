@@ -66,7 +66,7 @@ Games.boss = (function () {
       box.appendChild(b);
     });
 
-    Voice.say(question.dit, { rate: 0.9 });
+    Voice.say(question.dit, { rate: 0.9, coupe: true });
     lancerChrono();
   }
 

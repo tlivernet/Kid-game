@@ -6,7 +6,7 @@
    ========================================================================== */
 Games.detective = (function () {
   var TOTAL = 8;
-  var root, api, level, q, score, mot, cible, tries, busy;
+  var root, api, level, q, score, mot, cible, tries, busy, coeurs;
 
   function config(lv) {
     if (lv <= 1) return { choices: 3, casing: 'upper', fin: false };
@@ -25,12 +25,15 @@ Games.detective = (function () {
     root = _root; api = _api; level = lv; q = 0; score = 0;
     root.innerHTML =
       '<div class="det-wrap">' +
+        '<div class="coeurs-slot" id="d-coeurs"></div>' +
         '<div class="det-loupe" id="d-img">🔍</div>' +
         '<div class="det-question" id="d-q"></div>' +
         '<div class="det-mot" id="d-mot"></div>' +
         '<div class="choices" id="d-choices"></div>' +
       '</div>';
     tap(document.getElementById('d-img'), function () { repeat(); });
+    coeurs = Coeurs(3);
+    document.getElementById('d-coeurs').appendChild(coeurs.el);
     next();
   }
 
@@ -80,7 +83,7 @@ Games.detective = (function () {
     // on fige la question : la voix répond après coup, le mot peut avoir changé
     var fin = mot.fin;
     Voice.say(mot.d, {
-      rate: 0.8,
+      rate: 0.8, coupe: true,
       then: function () {
         if (!api.alive()) return;
         Voice.say(fin ? 'Par quelle lettre ça finit ?'
@@ -106,14 +109,19 @@ Games.detective = (function () {
       btn.classList.add('ko');
       wiggle(btn);
       Sound.prout(0.28);
-      if (tries >= 2) {
+      if (!coeurs.perdre()) {
+        busy = true;
+        ecrireMot();
+        return api.perdu('🕵️', 'Plus de cœurs ! Le mot était ' + mot.d + '.');
+      }
+      if (tries >= 1) {
         var all = root.querySelectorAll('.letter-btn');
         for (var i = 0; i < all.length; i++) {
           if (all[i].dataset.letter === cible) all[i].classList.add('helped');
         }
-        Voice.say('Écoute bien : ' + mot.d + '… ' + LETTER_SAY[cible] + ' !');
+        Voice.say('Écoute bien : ' + mot.d + '… ' + LETTER_SAY[cible] + ' !', { coupe: true });
       } else {
-        Voice.say(pick(ENCOURAGEMENTS));
+        Voice.say(pick(ENCOURAGEMENTS), { coupe: true });
       }
     }
   }

@@ -40,7 +40,7 @@ Games.ballons = (function () {
     hud.innerHTML = '<span class="hud-lbl">Éclate&nbsp;:</span>' +
                     '<span class="hud-letter">' + target + '</span>' +
                     '<span class="hud-letter small">' + target.toLowerCase() + '</span>';
-    Voice.say('Éclate les ' + LETTER_SAY[target], { rate: 0.9 });
+    Voice.say('Éclate les ' + LETTER_SAY[target], { rate: 0.9, coupe: true });
   }
 
   function spawn(startY) {
@@ -143,7 +143,7 @@ Games.ballons = (function () {
     balloons = [];
   }
 
-  function repeat() { if (target) Voice.say('Éclate les ' + LETTER_SAY[target]); }
+  function repeat() { if (target) Voice.say('Éclate les ' + LETTER_SAY[target], { coupe: true }); }
 
   return {
     title: 'Attrape-Ballons', spoken: 'Attrape les ballons',

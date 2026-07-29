@@ -45,7 +45,7 @@ Games.jumeaux = (function () {
     if (lock || c.done || c === first) return;
     c.el.classList.add('flipped');
     Sound.note(600, 0, 0.12, 'sine', 0.18);
-    sayLetter(c.L);
+    sayLetter(c.L, { coupe: true });
 
     if (!first) { first = c; return; }
 

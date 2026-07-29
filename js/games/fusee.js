@@ -93,9 +93,9 @@ Games.fusee = (function () {
         var bon = zone.querySelector('.star-letter[data-letter="' + suite[idx] + '"]');
         if (bon) bon.classList.add('helped');
         Voice.say('Après ' + LETTER_SAY[suite[idx - 1] || suite[0]] +
-                  ', c\'est ' + LETTER_SAY[suite[idx]] + ' !');
+                  ', c\'est ' + LETTER_SAY[suite[idx]] + ' !', { coupe: true });
       } else {
-        Voice.say('Non ! On cherche le ' + LETTER_SAY[suite[idx]]);
+        Voice.say('Non ! On cherche le ' + LETTER_SAY[suite[idx]], { coupe: true });
       }
       return;
     }
@@ -148,7 +148,7 @@ Games.fusee = (function () {
   function repeat() {
     if (over || !suite) return;
     Voice.say('Touche les lettres dans l\'ordre ! On commence par ' +
-              LETTER_SAY[suite[idx]] + '.', { rate: 0.9 });
+              LETTER_SAY[suite[idx]] + '.', { rate: 0.9, coupe: true });
   }
 
   function stop() { over = true; suite = null; ctx = null; }

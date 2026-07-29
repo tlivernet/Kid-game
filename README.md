@@ -56,12 +56,12 @@ fichier audio à télécharger).
 | 🎈 **Attrape-Ballons** | Éclater les ballons portant la bonne lettre | Balayage visuel rapide, réflexe |
 | 👯 **Les Jumeaux** | Memory : associer `A` et `a` | **Le lien majuscule ↔ minuscule** |
 | 🎩 **Le Prout-du** | Le pendu : trouver les lettres d'un mot | Décomposition d'un mot en lettres |
-| 🔢 **Compte les Zigotos** | Compter des personnages, toucher le bon chiffre | Dénombrement, nombres 1→20 |
+| 🔢 **Les Nombres** | Compter, lire un nombre, la suite, additions et soustractions | Dénombrement puis calcul |
 | ✍️ **Tableau Magique** | Tracer la lettre au doigt en suivant le chemin | Geste d'écriture, sens du tracé |
 | 🕵️ **Le Détective** | « Par quelle lettre commence PIZZA ? » puis le mot s'écrit | **Relier un son entendu à une lettre** |
 | 🚀 **Fusée Alphabet** | Toucher les lettres dans l'ordre, la fusée trace le chemin | L'ordre de l'alphabet |
 | 👹 **Le Monstre** | Combat de boss : tout y passe, avec 3 vies et un chrono | Révision mélangée sous tension |
-| 💩 **Boîte à Prouts** | Récréation : appuyer sur des boutons rigolos | (rien — c'est la récompense !) |
+| 💩 **Boutique** | Dépenser ses proutons en bruits rigolos et en autocollants | (rien — c'est la récompense !) |
 
 Les jeux **se débloquent avec les étoiles** (3 ⭐ pour Les Jumeaux, 6 pour le
 Prout-du… 25 pour le Monstre). Au tout début, seules la Dictée, les Zigotos et
@@ -97,23 +97,47 @@ sur des étoiles, jamais sur un score négatif.
 décroche vite : on finit une partie *avant* que l'attention ne tombe, et
 l'écran de victoire donne envie d'en refaire une.
 
-**La difficulté s'ajuste toute seule.**
-Chaque jeu a 4 niveaux (les 🔥 sur les cartes du menu). Réussite → on monte,
-difficulté → on redescend. Progression : majuscules faciles (A O I S M L) →
-alphabet complet → minuscules → mélange des deux écritures.
+**La difficulté s'ajuste toute seule, et ça se voit.**
+Chaque carte affiche « Niveau N » avec sa jauge, et une montée de niveau est
+annoncée en grand sur l'écran de fin. Une partie réussie fait monter d'un
+cran ; une partie faible ne fait **pas** redescendre tout de suite — il en
+faut deux d'affilée. Un enfant qu'on appelle au milieu d'une partie ne doit
+pas perdre ce qu'il a acquis, sinon il a l'impression de repartir à zéro.
+Seules les réponses trouvées **du premier coup** comptent dans le score.
+Progression des lettres : majuscules faciles (A O I S M L) → alphabet complet
+→ minuscules → mélange des deux écritures.
 
-*Compte les Zigotos* va plus loin, avec **8 niveaux** : de 5 zigotos bien
-alignés jusqu'à 20 éparpillés en désordre, puis deux niveaux de **calcul**
-(3 + 2 = ?) où les deux paquets d'objets restent sous les yeux — à cet âge on
-compte avec ses yeux avant de compter dans sa tête. Les chiffres proposés sont
-des voisins du bon nombre (il faut compter juste, pas à peu près) et sont
-**rangés dans l'ordre croissant** pour construire la frise des nombres.
+*Les Nombres* a **10 niveaux qui changent de nature**, pas seulement de
+taille : compter 18 objets au lieu de 9 n'apprend rien de plus. On passe donc
+de compter (1→12, alignés puis éparpillés) à **lire** un nombre entendu
+(« touche le 14 »), puis à la **suite** (« quel nombre vient après 7 ? »), à
+l'**addition** et enfin à la **soustraction**, où les objets mangés restent
+visibles mais barrés. Les réponses proposées sont des voisins du bon nombre
+(il faut compter juste, pas à peu près) et sont **rangées dans l'ordre
+croissant** pour construire la frise numérique.
 
-**Trois récompenses qui se cumulent.** Les étoiles ⭐ ouvrent les jeux, les
-proutons 💩 ouvrent les bruits rigolos, et une partie à 3 étoiles offre un
-**autocollant** à collectionner (24 en tout, visibles via le 🏅 du menu). Un
-enfant de 5 ans ne se motive pas pour un score : il se motive pour la
-vignette qui lui manque.
+**On peut vraiment perdre.** Trois cœurs par partie dans les jeux de
+questions : trois erreurs et la partie s'arrête, sans étoile. En revanche le
+jeu **ne reprend jamais** ce qui est déjà gagné : à cet âge, voir son trésor
+diminuer fait abandonner. L'enjeu, c'est de repartir les mains vides — pas
+d'être puni.
+
+**Quatre récompenses qui se cumulent.**
+- ⭐ **Les étoiles** ouvrent les jeux et font monter le **rang** (7 rangs, de
+  Petit Poussin à Légende de la Planète). Le rang ne se termine jamais : même
+  quand tout le reste est obtenu, il reste un palier devant soi, avec sa jauge
+  affichée en haut du menu.
+- 💩 **Les proutons sont la monnaie.** On les dépense à la **Boutique** :
+  bruits rigolos (5 à 60 proutons) et autocollants surprises (25). Ils ne
+  servent plus seulement de compteur — il faut choisir et économiser.
+- 🏅 **48 autocollants** à collectionner, un par partie à 3 étoiles, plus ceux
+  qu'on s'offre à la boutique. Un enfant de 5 ans ne se motive pas pour un
+  score : il se motive pour la vignette qui lui manque.
+- 🎯 **Trois missions** en cours en permanence (« gagne 4 ⭐ au Détective »),
+  toujours sur des jeux différents et en priorité **les moins joués**. C'est
+  la réponse au « il ne joue qu'à trois jeux » : on ne l'oblige à rien, on lui
+  donne une raison d'aller voir ailleurs, payée en proutons. Toucher une
+  mission lance directement le jeu concerné.
 
 **Le boss.** À 25 étoiles s'ouvre *Le Monstre*, qui mélange les quatre
 compétences (reconnaître, entendre, compter, associer). Il a 5 crânes de vie,
@@ -166,6 +190,14 @@ lire.
   voir `sons/LISEZMOI.md`. Sans fichier, le jeu reste 100 % synthétisé.
 - La voix utilise `SpeechSynthesis` en `fr-FR`, avec une écriture phonétique des
   noms de lettres (`B` → « bé », `Y` → « i grec ») sinon la synthèse les lit mal.
+  **Aucun « è » dans ces graphies** : les voix des tablettes le prononcent
+  littéralement (« èffe » devenait « e-accent-grave-f-f-e ») ou le confondent
+  avec « é ». On passe donc par de vrais mots homophones — *elle, aime, aine,
+  erre, esse* — impossibles à écorcher.
+- Les phrases passent par une **file d'attente** (`Voice.say`). Auparavant
+  chaque phrase annulait la précédente, et le « bravo » de fin de partie se
+  faisait couper par l'annonce suivante. Pour interrompre volontairement
+  (l'enfant vient d'agir), on passe `{ coupe: true }`.
   Les mots du pendu sont eux aussi stockés en version « à dire » (`zèbre` et non
   `ZEBRE`) : en majuscules, la synthèse prend le mot pour un sigle et l'épelle.
 - Tous les boutons passent par `tap()` (sur `pointerdown`) et **jamais** par

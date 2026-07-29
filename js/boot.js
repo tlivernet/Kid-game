@@ -3,6 +3,7 @@
    ========================================================================== */
 (function () {
   App.load();
+  App.majMissions();
   App.refreshScore();
   App.buildMenu();
 
@@ -38,6 +39,7 @@
   });
 
   tap(document.getElementById('btn-album'), function () { Sound.pop(); App.openAlbum(); });
+  tap(document.getElementById('btn-missions'), function () { Sound.pop(); App.openMissions(); });
 
   /* --- remise à zéro : une multiplication barre la route aux enfants ---
      (l'appui long ne marchait pas : sur tablette il déclenche le menu

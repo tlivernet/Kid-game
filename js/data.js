@@ -3,12 +3,20 @@
    ========================================================================== */
 
 /* Nom des lettres écrit "phonétiquement" : sans ça, la synthèse vocale lit
-   "Y" comme "i" et "F" comme "fe". Là, elle prononce le vrai nom de lettre. */
+   "Y" comme "i" et "F" comme "fe".
+
+   ⚠️ AUCUN « è » ici. Les voix des tablettes le prononcent littéralement
+   (« èffe » devenait « e-accent-grave-f-f-e ») ou le confondent avec « é »
+   (« èrre » sonnait « érre »). Le « é », lui, passe très bien.
+   On utilise donc de vrais mots français homophones du nom de la lettre :
+   elle, aime, aine, erre, esse — impossibles à écorcher.
+   Et « cu » plutôt que « ku » pour Q : en orthographe française « cu » se lit
+   /ky/ comme dans « cube », alors que « ku » risquait de sonner « cou ». */
 var LETTER_SAY = {
-  A: 'A', B: 'Bé', C: 'Cé', D: 'Dé', E: 'euh', F: 'èffe', G: 'Gé',
-  H: 'ache', I: 'i', J: 'ji', K: 'ka', L: 'èlle', M: 'èmme', N: 'ènne',
-  O: 'o', P: 'pé', Q: 'ku', R: 'èrre', S: 'èsse', T: 'té', U: 'u',
-  V: 'vé', W: 'double vé', X: 'ixe', Y: 'i grec', Z: 'zède'
+  A: 'A', B: 'Bé', C: 'Cé', D: 'Dé', E: 'euh', F: 'effe', G: 'Gé',
+  H: 'hache', I: 'i', J: 'ji', K: 'ka', L: 'elle', M: 'aime', N: 'aine',
+  O: 'o', P: 'pé', Q: 'cu', R: 'erre', S: 'esse', T: 'té', U: 'u',
+  V: 'vé', W: 'double vé', X: 'ixe', Y: 'i grec', Z: 'zed'
 };
 
 /* Une image-repère par lettre : "B comme Ballon" */
@@ -104,8 +112,38 @@ var AUTOCOLLANTS = [
   ['🦁', 'Lion'], ['🍕', 'Pizza'], ['🤖', 'Robot'], ['🌈', 'Arc-en-ciel'],
   ['🐢', 'Tortue'], ['⚡', 'Éclair'], ['🎃', 'Citrouille'], ['🦕', 'Diplo'],
   ['🍄', 'Champi'], ['🐳', 'Baleine'], ['🎪', 'Cirque'], ['🕹️', 'Manette'],
-  ['🦜', 'Perroquet'], ['🏆', 'Trophée'], ['🧙', 'Magicien'], ['💎', 'Diamant']
+  ['🦜', 'Perroquet'], ['🏆', 'Trophée'], ['🧙', 'Magicien'], ['💎', 'Diamant'],
+  /* deuxième planche : de quoi continuer quand la première est pleine */
+  ['🐺', 'Loup'], ['🦈', 'Requin'], ['🦋', 'Papillon'], ['🐝', 'Abeille'],
+  ['🦩', 'Flamant'], ['🦔', 'Hérisson'], ['🐨', 'Koala'], ['🦥', 'Paresseux'],
+  ['🛸', 'Soucoupe'], ['🎠', 'Manège'], ['🎡', 'Grande roue'], ['🏰', 'Château'],
+  ['⛵', 'Voilier'], ['🚂', 'Locomotive'], ['🚁', 'Hélico'], ['🏎️', 'Bolide'],
+  ['🍉', 'Pastèque'], ['🥨', 'Bretzel'], ['🧁', 'Cupcake'], ['🍫', 'Chocolat'],
+  ['🎺', 'Trompette'], ['🥁', 'Batterie'], ['🪄', 'Baguette'], ['💩', 'Le Prout d\'Or']
 ];
+
+/* Rangs : la progression qui ne s'arrête jamais. Les autocollants et les
+   sons finissent par être tous obtenus ; le rang, lui, continue de monter
+   avec le total d'étoiles et donne toujours un « prochain palier ». */
+var RANGS = [
+  [0,   '🐣', 'Petit Poussin'],
+  [15,  '🐥', 'Explorateur'],
+  [40,  '🦊', 'Fin Renard'],
+  [80,  '🦸', 'Super-Héros'],
+  [140, '🐉', 'Dompteur de Dragon'],
+  [220, '👑', 'Roi des Lettres'],
+  [350, '🚀', 'Légende de la Planète']
+];
+
+function rangDe(etoiles) {
+  var r = RANGS[0];
+  for (var i = 0; i < RANGS.length; i++) if (etoiles >= RANGS[i][0]) r = RANGS[i];
+  return r;
+}
+function rangSuivant(etoiles) {
+  for (var i = 0; i < RANGS.length; i++) if (etoiles < RANGS[i][0]) return RANGS[i];
+  return null;
+}
 
 
 /* Mots SANS emoji : rien ne les illustre, mais ils sont dits à voix haute et

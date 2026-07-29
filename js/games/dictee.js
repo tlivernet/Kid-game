@@ -4,7 +4,7 @@
    ========================================================================== */
 Games.dictee = (function () {
   var TOTAL = 8;
-  var root, api, level, q, score, target, tries, busy;
+  var root, api, level, q, score, target, tries, busy, coeurs;
 
   function config(lv) {
     if (lv <= 1) return { pool: LETTER_LEVELS[0], choices: 3, casing: 'upper' };
@@ -24,11 +24,14 @@ Games.dictee = (function () {
     q = 0; score = 0;
     root.innerHTML =
       '<div class="dictee-wrap">' +
+        '<div class="coeurs-slot" id="d-coeurs"></div>' +
         '<div class="ear-box"><button class="ear" id="d-ear">👂</button></div>' +
         '<div class="hint" id="d-hint"></div>' +
         '<div class="choices" id="d-choices"></div>' +
       '</div>';
     tap(document.getElementById('d-ear'), function () { repeat(); });
+    coeurs = Coeurs(3);
+    document.getElementById('d-coeurs').appendChild(coeurs.el);
     next();
   }
 
@@ -65,7 +68,7 @@ Games.dictee = (function () {
 
   function repeat() {
     if (!target || !api.alive()) return;
-    Voice.say('Touche la lettre… ' + LETTER_SAY[target], { rate: 0.85 });
+    Voice.say('Touche la lettre… ' + LETTER_SAY[target], { rate: 0.85, coupe: true });
   }
 
   function answer(btn, L) {
@@ -86,15 +89,19 @@ Games.dictee = (function () {
       btn.classList.add('ko');
       wiggle(btn);
       Sound.prout(0.3);
-      if (tries >= 2) {
+      if (!coeurs.perdre()) {
+        busy = true;
+        return api.perdu('🪄', 'Plus de cœurs ! La lettre était ' + LETTER_SAY[target] + '.');
+      }
+      if (tries >= 1) {
         // coup de pouce : la bonne lettre se met à sautiller
         var all = root.querySelectorAll('.letter-btn');
         for (var i = 0; i < all.length; i++) {
           if (all[i].dataset.letter === target) all[i].classList.add('helped');
         }
-        Voice.say('Elle est là ! La lettre ' + LETTER_SAY[target]);
+        Voice.say('Elle est là ! La lettre ' + LETTER_SAY[target], { coupe: true });
       } else {
-        Voice.say(pick(ENCOURAGEMENTS));
+        Voice.say(pick(ENCOURAGEMENTS), { coupe: true });
       }
     }
   }

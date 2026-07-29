@@ -538,6 +538,102 @@ body::before {           /* ciel étoilé animé */
   font-size: 10vmin; font-weight: 900; color: #ffe97a;
 }
 
+
+/* ---------------- rang (barre de progression permanente) ---------------- */
+.rang {
+  display: flex; align-items: center; gap: 1.2vmin; flex: 1;
+  justify-content: center; min-width: 0;
+}
+.rang-emoji { font-size: 6vmin; line-height: 1; }
+.rang-txt { display: flex; flex-direction: column; gap: .6vmin; min-width: 22vmin; }
+.rang-nom { font-size: 2.6vmin; font-weight: 800; white-space: nowrap; }
+.rang-barre {
+  height: 1.6vmin; border-radius: 999px; background: #ffffff26; overflow: hidden;
+}
+.rang-barre i {
+  display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, #7CFFB2, #ffe97a);
+  transition: width .6s ease;
+}
+.rang-reste { font-size: 2.4vmin; font-weight: 800; opacity: .8; white-space: nowrap; }
+
+/* pastille du bouton missions */
+#btn-missions { position: relative; }
+#btn-missions[data-n]:not([data-n=""])::after {
+  content: attr(data-n); position: absolute; top: -0.5vmin; right: -0.5vmin;
+  min-width: 4.4vmin; height: 4.4vmin; border-radius: 999px;
+  background: #ff3b6b; color: #fff; font-size: 2.6vmin; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ---------------- niveau sur les cartes ---------------- */
+.card-lvl { display: flex; flex-direction: column; align-items: center; gap: .6vmin; }
+.lvl-barre {
+  display: block; width: 14vmin; height: 1.1vmin; border-radius: 999px;
+  background: #00000045; overflow: hidden;
+}
+.lvl-barre i {
+  display: block; height: 100%; border-radius: 999px; background: #ffe97a;
+}
+.card-mission {
+  position: absolute; top: 1vmin; right: 1.4vmin; font-size: 4vmin;
+  animation: hop 1.6s ease infinite;
+}
+.game-card { position: relative; }
+
+/* ---------------- niveau sur l'écran de victoire ---------------- */
+.win-level { display: none; }
+.win-level.on {
+  display: block; font-size: 4vmin; font-weight: 800; color: #fff; opacity: .9;
+}
+.win-level.monte {
+  font-size: 6.5vmin; color: #7CFFB2; text-shadow: 0 0 3vmin #7CFFB2;
+  animation: winpop .7s ease .3s backwards;
+}
+
+/* ---------------- missions ---------------- */
+.mission {
+  display: flex; align-items: center; gap: 2vmin; text-align: left;
+  background: #ffffff14; border-radius: 2.4vmin; padding: 1.6vmin 2vmin;
+  margin-top: 1.6vmin;
+}
+.mi-emoji { font-size: 8vmin; line-height: 1; }
+.mi-txt { flex: 1; font-size: 2.8vmin; line-height: 1.35; }
+.mi-barre {
+  display: block; height: 1.4vmin; border-radius: 999px;
+  background: #00000045; overflow: hidden; margin-top: .8vmin;
+}
+.mi-barre i { display: block; height: 100%; background: #7CFFB2; border-radius: 999px; }
+.mi-prix { font-size: 3.2vmin; font-weight: 900; color: #ffe97a; white-space: nowrap; }
+
+/* ---------------- cœurs ---------------- */
+.coeurs-slot { display: flex; justify-content: center; }
+.coeurs { display: flex; gap: 1vmin; font-size: 5vmin; line-height: 1; }
+.coeur.vide { opacity: .35; }
+
+/* ---------------- boutique ---------------- */
+.sb-solde {
+  font-size: 3.6vmin; background: #00000045; border-radius: 999px;
+  padding: .6vmin 2.4vmin; margin-left: 1.5vmin;
+}
+.sb-prix { font-size: 2.6vmin; font-weight: 900; color: #ffe97a; }
+.achat-sticker { background: linear-gradient(180deg, #7b5cff, #3f2b96); }
+
+/* ---------------- nombres : écoute, frise, soustraction ---------------- */
+.compte-zone.ecoute { align-items: center; justify-content: center; }
+.gros-ecoute { font-size: 22vmin; line-height: 1; animation: pulse 2s ease-in-out infinite; }
+.frise { display: flex; align-items: center; gap: 2vmin; }
+.frise-n {
+  font-size: 12vmin; font-weight: 900; color: #fff; line-height: 1;
+  background: #ffffff14; border-radius: 2.4vmin; padding: 1.5vmin 3vmin;
+}
+.frise-n.vide { color: #ffe97a; border: 0.6vmin dashed #ffe97a88; background: none; }
+.zigoto.barre { opacity: .3; filter: grayscale(1); position: relative; }
+.zigoto.barre::after {
+  content: '✖️'; position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%); font-size: .8em; opacity: .9;
+}
+
 /* ---------------- petits écrans en paysage ---------------- */
 @media (orientation: landscape) and (max-height: 520px) {
   .card-emoji { font-size: 9vmin; }
