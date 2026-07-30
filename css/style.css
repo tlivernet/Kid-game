@@ -749,6 +749,23 @@ body.mode-test::after {
 .kart-piste canvas {
   position: absolute; inset: 0; touch-action: none;
 }
+/* Les deux flèches de pilotage, sous la route : une barre entière coupée en
+   deux, là où les pouces arrivent quand on tient la tablette à deux mains.
+   Impossible de les rater, et elles ne masquent jamais le kart. */
+.kart-commandes {
+  display: flex; gap: 2vmin; flex: 0 0 auto; height: 13vmin;
+}
+.volant {
+  flex: 1; border: none; border-radius: 3vmin;
+  font-size: 8vmin; line-height: 1;
+  color: #2b1d00; font-family: inherit; font-weight: 900;
+  background: radial-gradient(circle at 40% 30%, #fff6c9, #ffb02e 70%);
+  box-shadow: 0 1vmin 0 #a05e00;
+  touch-action: none; -webkit-tap-highlight-color: transparent;
+}
+.volant:active { transform: translateY(0.8vmin); box-shadow: 0 0.2vmin 0 #a05e00; }
+.volant.appui { animation: volant .25s ease; }
+@keyframes volant { 40% { background: #7CFFB2; transform: translateY(0.8vmin); } }
 
 /* ---------------- Lis le Mot ---------------- */
 .lire-wrap {

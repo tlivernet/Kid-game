@@ -15,7 +15,7 @@ Games.course = (function () {
   var items, suite, idx, voie, voieCible, kartX, vitesse, raf, last;
   var coeurs, over, spawnT, motActuel;
   var courbe, courbeCible, prochainVirage, parcouru;
-  var son, vitesseBase, boostJusqu, derniereVoie;
+  var son, vitesseBase, boostJusqu, derniereVoie, clavier;
 
   function config(lv) {
     if (lv <= 1) return { n: 5, mot: false, vitesse: 0.24, tempo: 1250, casing: 'upper' };
@@ -54,15 +54,36 @@ Games.course = (function () {
         '<div class="coeurs-slot" id="k-coeurs"></div>' +
         '<div class="kart-suite" id="k-suite"></div>' +
       '</div>' +
-      '<div class="kart-piste" id="k-piste"><canvas id="k-cvs"></canvas></div>';
+      '<div class="kart-piste" id="k-piste">' +
+        '<canvas id="k-cvs"></canvas>' +
+      '</div>' +
+      '<div class="kart-commandes">' +
+        '<button class="volant" id="k-gauche">◀</button>' +
+        '<button class="volant" id="k-droite">▶</button>' +
+      '</div>';
 
     coeurs = Coeurs(3);
     document.getElementById('k-coeurs').appendChild(coeurs.el);
     cvs = document.getElementById('k-cvs');
     ctx = cvs.getContext('2d');
 
+    // Deux grosses flèches sous la route : viser une voie en tapant sur la
+    // route est trompeur, parce que la route est étroite en haut et large en
+    // bas — toucher une lettre lointaine ne désigne pas sa voie. Les flèches,
+    // elles, ne peuvent pas être mal comprises. Elles sont SOUS le canvas et
+    // non posées dessus : dans les voies extrêmes le kart occupe les coins
+    // bas de l'écran, un bouton flottant l'aurait caché.
+    fleche('k-gauche', -1);
+    fleche('k-droite', 1);
+    // le toucher direct sur la route reste possible pour ceux qui préfèrent
     cvs.addEventListener('pointerdown', doigt);
     cvs.addEventListener('pointermove', doigt);
+    // et les flèches du clavier, pratiques pour essayer sur un ordinateur
+    clavier = function (e) {
+      if (e.key === 'ArrowLeft') bouger(-1);
+      else if (e.key === 'ArrowRight') bouger(1);
+    };
+    window.addEventListener('keydown', clavier);
 
     majSuite();
     // on attend la mise en page avant de mesurer : juste après innerHTML,
@@ -124,6 +145,32 @@ Games.course = (function () {
   }
 
   /* ---------- pilotage ---------- */
+
+  /* On câble les flèches à la main au lieu d'utiliser tap() : tap() verrouille
+     un bouton pendant 350 ms après chaque appui (utile contre les doubles
+     touches dans les menus), or ici il faut pouvoir appuyer deux fois de suite
+     très vite pour traverser deux voies — le deuxième appui était avalé, et
+     dans une course c'est une lettre ratée. */
+  function fleche(id, sens) {
+    var b = document.getElementById(id);
+    b.addEventListener('pointerdown', function (ev) {
+      ev.preventDefault();
+      if (Date.now() - screenAt < GHOST_MS) return;   // touche fantôme
+      bouger(sens);
+    });
+    b.addEventListener('click', function (ev) { ev.preventDefault(); });
+  }
+
+  function bouger(sens) {
+    if (over) return;
+    var nouvelle = Math.max(0, Math.min(VOIES - 1, voieCible + sens));
+    if (nouvelle === voieCible) { Sound.boing(); return; }   // déjà au bord
+    voieCible = nouvelle;
+    Sound.derapage();
+    var b = document.getElementById(sens < 0 ? 'k-gauche' : 'k-droite');
+    if (b) { b.classList.remove('appui'); void b.offsetWidth; b.classList.add('appui'); }
+  }
+
   function doigt(ev) {
     if (over) return;
     ev.preventDefault();
@@ -491,6 +538,7 @@ Games.course = (function () {
     if (son) { son.stop(); son = null; }
     cancelAnimationFrame(raf);
     window.removeEventListener('resize', dimensionner);
+    if (clavier) { window.removeEventListener('keydown', clavier); clavier = null; }
     items = []; ctx = null; cvs = null;
   }
 

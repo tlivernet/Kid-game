@@ -152,9 +152,19 @@ même lettre** (ÉCOLE, ÉTOILE, ESCARGOT, ÉLÉPHANT) : impossible de s'en tire
 avec l'initiale, il faut lire jusqu'au bout.
 
 **La course.** La route file vers l'enfant, les lettres arrivent de l'horizon
-sur trois voies, et il déplace son kart au doigt pour attraper **les bonnes,
-dans l'ordre**. Aux deux premiers niveaux c'est l'ordre de l'alphabet ;
-ensuite ce sont les lettres d'un mot — donc **épeler en jouant**.
+sur trois voies, et il déplace son kart pour attraper **les bonnes, dans
+l'ordre**. Aux deux premiers niveaux c'est l'ordre de l'alphabet ; ensuite ce
+sont les lettres d'un mot — donc **épeler en jouant**.
+
+On pilote avec **deux grosses flèches ◀ ▶ posées sous la route**, chacune sur
+la moitié de la largeur, là où les pouces arrivent quand on tient la tablette à
+deux mains. Viser une voie en tapant *sur* la route était trop imprécis : la
+route est étroite en haut et large en bas, donc toucher une lettre lointaine ne
+désigne pas sa voie. Un appui = exactement une voie, et ça bute au bord (petit
+*boing*). Les flèches sont **sous** le canvas plutôt que posées dessus, parce
+que dans les voies extrêmes le kart occupe justement les coins bas de l'image.
+Le toucher direct sur la route reste possible, et les flèches du clavier
+marchent sur ordinateur.
 
 La règle des cœurs est à l'envers de ce qu'on ferait d'instinct : percuter une
 mauvaise lettre ne coûte **pas** de cœur (ça freine, c'est tout), mais laisser
@@ -253,6 +263,11 @@ mode test oublié ne prive jamais l'enfant de sa progression.
 - Tous les boutons passent par `tap()` (sur `pointerdown`) et **jamais** par
   `click` : mélanger les deux fait qu'un doigt qui se lève après un changement
   d'écran déclenche l'élément situé dessous sur le nouvel écran.
+  Seule exception : les flèches de la Course sont câblées à la main, parce que
+  `tap()` verrouille un bouton 350 ms après chaque appui (une protection utile
+  contre les doubles touches dans les menus). En course il faut pouvoir appuyer
+  deux fois de suite très vite pour traverser deux voies ; le second appui était
+  avalé, et une voie non traversée, c'est une lettre ratée.
 - Les lettres du Tableau Magique sont définies comme des polylignes normalisées
   dans `js/data.js` (`TRACES`), rééchantillonnées en points de contrôle : le
   tracé est validé si le doigt passe près de chaque point, dans l'ordre.
