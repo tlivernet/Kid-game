@@ -285,7 +285,7 @@ Games.tableau = (function () {
   return {
     title: 'Tableau Magique', spoken: 'Le tableau magique',
     emoji: '✍️', color: 'linear-gradient(160deg,#ff8a5c,#b02a6e)',
-    need: 20,
+    need: 20, pleinEcran: true,
     start: start, stop: stop, repeat: repeat
   };
 })();

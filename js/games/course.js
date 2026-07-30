@@ -15,6 +15,7 @@ Games.course = (function () {
   var items, suite, idx, voie, voieCible, kartX, vitesse, raf, last;
   var coeurs, over, spawnT, motActuel;
   var courbe, courbeCible, prochainVirage, parcouru;
+  var son, vitesseBase, boostJusqu, derniereVoie;
 
   function config(lv) {
     if (lv <= 1) return { n: 5, mot: false, vitesse: 0.24, tempo: 1250, casing: 'upper' };
@@ -44,7 +45,8 @@ Games.course = (function () {
     }
 
     idx = 0; items = []; voie = 1; voieCible = 1; kartX = 0.5;
-    vitesse = cfg.vitesse; spawnT = 0;
+    vitesseBase = cfg.vitesse; vitesse = cfg.vitesse; spawnT = 0;
+    boostJusqu = 0; derniereVoie = 1;
     courbe = 0; courbeCible = 0; prochainVirage = 2.5; parcouru = 0;
 
     root.innerHTML =
@@ -69,6 +71,7 @@ Games.course = (function () {
       if (over || !cvs) return;
       dimensionner();
       last = performance.now();
+      son = Sound.moteur();          // le moteur tourne tant qu'on joue
       raf = requestAnimationFrame(boucle);
       annonce();
     });
@@ -126,7 +129,9 @@ Games.course = (function () {
     ev.preventDefault();
     var r = cvs.getBoundingClientRect();
     var x = (ev.clientX - r.left) / r.width;
-    voieCible = Math.max(0, Math.min(VOIES - 1, Math.floor(x * VOIES)));
+    var nouvelle = Math.max(0, Math.min(VOIES - 1, Math.floor(x * VOIES)));
+    if (nouvelle !== voieCible) Sound.derapage();   // crissement de pneus
+    voieCible = nouvelle;
   }
 
   /* ---------- boucle de jeu ---------- */
@@ -144,6 +149,11 @@ Games.course = (function () {
       if (Math.random() < 0.25) courbeCible = 0;      // parfois une ligne droite
     }
     courbe += (courbeCible - courbe) * Math.min(1, dt * 0.9);
+
+    // fin du coup de turbo
+    if (boostJusqu && now > boostJusqu) boostJusqu = 0;
+    vitesse = vitesseBase * (boostJusqu ? 1.85 : 1);
+    if (son) son.regime(Math.min(1, (vitesse - 0.2) / 0.6));
 
     // le kart glisse vers la voie visée
     var cible = voieCible / (VOIES - 1);
@@ -202,6 +212,13 @@ Games.course = (function () {
       L: L, voie: v, z: 1,
       vue: cfg.casing === 'mix' && Math.random() < 0.5 ? L.toLowerCase() : L
     });
+
+    // un éclair de temps en temps : le bonus d'accélération
+    if (Math.random() < 0.18) {
+      var libres2 = [];
+      for (var j = 0; j < VOIES; j++) if (j !== v) libres2.push(j);
+      items.push({ boost: true, voie: pick(libres2), z: 1.05, vue: '⚡' });
+    }
   }
 
   /* Règle des cœurs, à l'envers de ce qu'on ferait d'instinct :
@@ -210,6 +227,14 @@ Games.course = (function () {
      de rater la cible, pas le fait d'hésiter — un enfant lent perdait
      sinon des cœurs sans avoir rien fait de mal. */
   function attraper(it) {
+    if (it.boost) {
+      if (it.voie !== voie) return;
+      boostJusqu = performance.now() + 2600;
+      Sound.turbo();
+      api.confetti(14);
+      api.flash('⚡ TURBO ⚡');
+      return;
+    }
     if (it.voie !== voie) {
       if (it.L === suite[idx]) return echappee();
       return;
@@ -220,7 +245,7 @@ Games.course = (function () {
       Sound.good();
       Sound.note(420 + idx * 50, 0, 0.16, 'sawtooth', 0.18);
       api.confetti(10);
-      vitesse += 0.015;                        // ça s'emballe un peu
+      vitesseBase += 0.015;                    // ça s'emballe un peu
       api.dots(idx, suite.length);
       majSuite();
       if (idx >= suite.length) return gagne();
@@ -228,7 +253,7 @@ Games.course = (function () {
     } else {
       Sound.prout(0.25);
       api.flash('💩 ' + it.vue);
-      vitesse = Math.max(config(level).vitesse * 0.7, vitesse - 0.06);   // ça freine
+      vitesseBase = Math.max(config(level).vitesse * 0.7, vitesseBase - 0.06);   // ça freine
       Voice.say('Oups ! On cherche le ' + LETTER_SAY[suite[idx]], { coupe: true });
     }
   }
@@ -326,11 +351,14 @@ Games.course = (function () {
     items.slice().sort(function (a, b) { return b.z - a.z; }).forEach(function (it) {
       var s = ech(it.z);
       var x = voieX(it.voie, it.z), y = ligneY(it.z);
-      var r = W * 0.16 * s;
-      var estCible = it.L === suite[idx];
+      // bulles nettement plus petites qu'avant : à 0,16 de la largeur elles
+      // arrivaient les unes sur les autres et on ne pouvait plus anticiper
+      // laquelle éviter
+      var r = W * (it.boost ? 0.085 : 0.10) * s;
+      var estCible = !it.boost && it.L === suite[idx];
       var g = ctx.createRadialGradient(x - r * 0.3, y - r * 0.4, r * 0.1, x, y, r);
-      g.addColorStop(0, estCible ? '#eaffe7' : '#fff8c9');
-      g.addColorStop(1, estCible ? '#3fd97a' : '#ffb02e');
+      g.addColorStop(0, it.boost ? '#dff4ff' : (estCible ? '#eaffe7' : '#fff8c9'));
+      g.addColorStop(1, it.boost ? '#2f8fff' : (estCible ? '#3fd97a' : '#ffb02e'));
       ctx.fillStyle = g;
       ctx.beginPath();
       ctx.arc(x, y - r * 0.5, r, 0, Math.PI * 2);
@@ -428,6 +456,7 @@ Games.course = (function () {
   /* ---------- fin ---------- */
   function gagne() {
     over = true;
+    if (son) { son.stop(); son = null; }
     cancelAnimationFrame(raf);
     api.confetti(60);
     Sound.fanfare();
@@ -445,6 +474,8 @@ Games.course = (function () {
 
   function perdu() {
     over = true;
+    if (son) { son.stop(); son = null; }
+    Sound.derapage();
     cancelAnimationFrame(raf);
     api.perdu('🏎️', 'Plus de cœurs ! Il fallait attraper le ' +
                      LETTER_SAY[suite[idx]] + '.');
@@ -457,6 +488,7 @@ Games.course = (function () {
 
   function stop() {
     over = true;
+    if (son) { son.stop(); son = null; }
     cancelAnimationFrame(raf);
     window.removeEventListener('resize', dimensionner);
     items = []; ctx = null; cvs = null;
@@ -465,7 +497,7 @@ Games.course = (function () {
   return {
     title: 'Course des Lettres', spoken: 'La course des lettres',
     emoji: '🏎️', color: 'linear-gradient(160deg,#ff9f45,#a63d00)',
-    need: 10,
+    need: 10, pleinEcran: true,
     start: start, stop: stop, repeat: repeat
   };
 })();

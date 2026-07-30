@@ -331,6 +331,8 @@ body::before {           /* ciel étoilé animé */
 .prout-btn.boom { animation: boom .5s ease; }
 @keyframes boom { 40% { transform: scale(1.35) rotate(-14deg); } }
 #screen-start .prout-btn { display: none; }
+/* jeux qui se pilotent au doigt sur toute la surface : le bouton gênerait */
+body.sans-prout .prout-btn { display: none; }
 
 /* ---------------- confettis & flash ---------------- */
 .confetti-layer { position: fixed; inset: 0; pointer-events: none; z-index: 90; overflow: hidden; }
@@ -725,6 +727,52 @@ body::before {           /* ciel étoilé animé */
 .kart-piste canvas {
   position: absolute; inset: 0; touch-action: none;
 }
+
+/* ---------------- Lis le Mot ---------------- */
+.lire-wrap {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 2vmin; min-height: 0;
+}
+.lire-haut {
+  display: flex; align-items: center; gap: 2vmin;
+  flex-wrap: wrap; justify-content: center; max-width: 100%;
+}
+.lire-mot {
+  display: flex; gap: 0.6vmin; flex-wrap: wrap; justify-content: center;
+  max-width: 80vmin;
+}
+.li-lettre {
+  font-weight: 900; color: #fff; line-height: 1;
+  background: #ffffff1a; border-radius: 1.4vmin;
+  padding: 1.1vmin 1.1vmin;
+  animation: drop .4s ease backwards;
+}
+.lire-oreille {
+  font-size: 8vmin; width: 14vmin; height: 14vmin; border-radius: 50%;
+  border: none; background: radial-gradient(circle at 40% 30%, #fff4, #ffffff1a);
+  box-shadow: 0 0 0 0.8vmin #ffffff17;
+  animation: pulse 2.2s ease-in-out infinite;
+  flex: 0 0 auto;
+}
+.lire-oreille:active { transform: scale(.9); }
+.lire-images {
+  display: flex; flex-wrap: wrap; gap: 2.5vmin;
+  align-items: center; justify-content: center;
+}
+.image-carte {
+  border: none; border-radius: 3.5vmin; font-family: inherit;
+  width: 26vmin; height: 26vmin; font-size: 15vmin; line-height: 1;
+  background: linear-gradient(180deg, #ffffff26, #ffffff10);
+  box-shadow: 0 1.2vmin 0 #0005, inset 0 0.6vmin 0 #ffffff2e;
+}
+.lire-images.n4 .image-carte { width: 22vmin; height: 22vmin; font-size: 12.5vmin; }
+.image-carte:active { transform: translateY(1vmin) scale(.97); }
+.image-carte.ok {
+  animation: popok .5s ease;
+  background: linear-gradient(180deg,#7cff9b,#12a544);
+}
+.image-carte.ko { opacity: .35; }
+.image-carte.helped { animation: hop .7s ease infinite; box-shadow: 0 0 3vmin 1vmin #ffe97a; }
 
 /* ---------------- petits écrans en paysage ---------------- */
 @media (orientation: landscape) and (max-height: 520px) {

@@ -385,6 +385,85 @@ var Sound = (function () {
     breath(t, dur, 700, 0.8, 0.11);
   }
 
+  /* ========================================================================
+     BRUITS DE COURSE
+     ======================================================================== */
+
+  /* Moteur : un son CONTINU dont on fait varier le régime. Fondamentale
+     volontairement haute (90 à 240 Hz) et filtre passe-bas généreux : sur un
+     haut-parleur de tablette, un vrai grondement de moteur serait inaudible,
+     ce sont les harmoniques qui font le bruit. Volume bas pour ne jamais
+     couvrir la voix qui donne la consigne. */
+  function moteur() {
+    var c = ac(), t = c.currentTime;
+    var o = c.createOscillator(), o2 = c.createOscillator();
+    var f = c.createBiquadFilter(), g = c.createGain();
+    o.type = 'sawtooth'; o.frequency.value = 95;
+    o2.type = 'square';  o2.frequency.value = 143;   // quinte au-dessus
+    f.type = 'lowpass'; f.frequency.value = 900; f.Q.value = 2;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.075, t + 0.5);
+    // léger tremblement : un régime parfaitement lisse sonne synthétique
+    var lfo = c.createOscillator(), lg = c.createGain();
+    lfo.frequency.value = 7; lg.gain.value = 5;
+    lfo.connect(lg); lg.connect(o.frequency);
+    o.connect(f); o2.connect(f); f.connect(g); g.connect(master);
+    o.start(t); o2.start(t); lfo.start(t);
+    var vivant = true;
+    return {
+      regime: function (v) {                 // v : 0 = ralenti, 1 = à fond
+        if (!vivant) return;
+        var n = ac().currentTime;
+        o.frequency.setTargetAtTime(90 + v * 150, n, 0.18);
+        o2.frequency.setTargetAtTime(138 + v * 230, n, 0.18);
+        f.frequency.setTargetAtTime(800 + v * 1500, n, 0.25);
+        g.gain.setTargetAtTime(0.06 + v * 0.035, n, 0.3);
+      },
+      stop: function () {
+        if (!vivant) return;
+        vivant = false;
+        var n = ac().currentTime;
+        g.gain.cancelScheduledValues(n);
+        g.gain.setValueAtTime(Math.max(0.0001, g.gain.value), n);
+        g.gain.exponentialRampToValueAtTime(0.0001, n + 0.3);
+        [o, o2, lfo].forEach(function (x) { try { x.stop(n + 0.35); } catch (e) {} });
+      }
+    };
+  }
+
+  /* Dérapage : crissement de pneus. Du bruit dans un passe-bande aigu qui
+     redescend, plus une pointe de scie pour le côté "gomme qui râle". */
+  function derapage() {
+    var c = ac(), t = c.currentTime, dur = 0.42;
+    breath(t, dur, 2600, 3.5, 0.16);
+    var o = c.createOscillator(), f = c.createBiquadFilter(), g = c.createGain();
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(680, t);
+    o.frequency.exponentialRampToValueAtTime(380, t + dur);
+    f.type = 'bandpass'; f.frequency.value = 1500; f.Q.value = 4;
+    env(g, t, 0.12, 0.02, dur);
+    o.connect(f); f.connect(g); g.connect(master);
+    o.start(t); o.stop(t + dur + 0.05);
+  }
+
+  /* Turbo : la montée en flèche du bonus d'accélération. */
+  function turbo() {
+    var c = ac(), t = c.currentTime, dur = 0.75;
+    var o = c.createOscillator(), g = c.createGain(), f = c.createBiquadFilter();
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(220, t);
+    o.frequency.exponentialRampToValueAtTime(1500, t + dur * 0.8);
+    f.type = 'lowpass';
+    f.frequency.setValueAtTime(1200, t);
+    f.frequency.exponentialRampToValueAtTime(4500, t + dur);
+    f.Q.value = 6;
+    env(g, t, 0.3, 0.03, dur);
+    o.connect(f); f.connect(g); g.connect(master);
+    o.start(t); o.stop(t + dur + 0.05);
+    breath(t, dur, 3000, 1.2, 0.12);
+    for (var i = 0; i < 4; i++) note(700 + i * 260, i * 0.07, 0.2, 'triangle', 0.14);
+  }
+
   /* --- sifflet qui dégonfle --- */
   function ballon() {
     if (sample('ballon')) return;
@@ -407,6 +486,7 @@ var Sound = (function () {
     pop: pop, good: good, oops: oops,
     fanfare: fanfare, sparkle: sparkle, boing: boing,
     rot: rot, ballon: ballon, note: note,
+    moteur: moteur, derapage: derapage, turbo: turbo,
     _useContext: useContext
   };
 })();

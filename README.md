@@ -60,7 +60,8 @@ fichier audio à télécharger).
 | ✍️ **Tableau Magique** | Tracer la lettre au doigt en suivant le chemin | Geste d'écriture, sens du tracé |
 | 🕵️ **Le Détective** | « Par quelle lettre commence PIZZA ? » puis le mot s'écrit | **Relier un son entendu à une lettre** |
 | 🚀 **Fusée Alphabet** | Toucher les lettres dans l'ordre ; la fusée se pose sur chaque bulle comme sur une planète | L'ordre de l'alphabet |
-| 🏎️ **La Course des Lettres** | Un kart en fausse 3D, vu de dos, sur une route qui serpente : attraper les lettres dans l'ordre | Ordre de l'alphabet, puis **épeler un mot** |
+| 📖 **Lis le Mot** | Le mot est écrit : toucher le dessin qui va avec | **Déchiffrer pour de vrai** |
+| 🏎️ **La Course des Lettres** | Un kart en fausse 3D, vu de dos, sur une route qui serpente : attraper les lettres dans l'ordre, avec bonus turbo | Ordre de l'alphabet, puis **épeler un mot** |
 | 👹 **Le Monstre** | Combat de boss : tout y passe, avec 3 vies et un chrono | Révision mélangée sous tension |
 | 💩 **Boutique** | Dépenser ses proutons en bruits rigolos et en autocollants | (rien — c'est la récompense !) |
 
@@ -140,6 +141,16 @@ d'être puni.
   donne une raison d'aller voir ailleurs, payée en proutons. Toucher une
   mission lance directement le jeu concerné.
 
+**Lis le Mot.** C'est le seul jeu où il faut vraiment déchiffrer : partout
+ailleurs la voix donne la réponse. La progression est faite pour qu'il puisse
+d'abord tricher, puis de moins en moins. Au niveau 1 le mot est dit tout de
+suite et il n'y a que 2 images très différentes : il réussit sans lire, mais
+il **voit** le mot pendant qu'il l'entend. À partir du niveau 3 le mot n'est
+plus dit du tout — il doit toucher l'oreille 👂 pour l'entendre, donc essayer
+de lire d'abord. Au niveau 4, les quatre images commencent **toutes par la
+même lettre** (ÉCOLE, ÉTOILE, ESCARGOT, ÉLÉPHANT) : impossible de s'en tirer
+avec l'initiale, il faut lire jusqu'au bout.
+
 **La course.** La route file vers l'enfant, les lettres arrivent de l'horizon
 sur trois voies, et il déplace son kart au doigt pour attraper **les bonnes,
 dans l'ordre**. Aux deux premiers niveaux c'est l'ordre de l'alphabet ;
@@ -150,7 +161,9 @@ mauvaise lettre ne coûte **pas** de cœur (ça freine, c'est tout), mais laisse
 filer la bonne en coûte un. On sanctionne le fait de rater la cible, pas le
 fait d'hésiter — sans quoi un enfant lent perd des cœurs sans avoir rien fait
 de mal. Il n'y a jamais qu'une seule bonne lettre sur la route à la fois, pour
-qu'il sache toujours laquelle aller chercher.
+qu'il sache toujours laquelle aller chercher. Le moteur tourne en continu et
+son régime suit la vitesse, les pneus crissent à chaque changement de voie, et
+des éclairs ⚡ à ramasser donnent un coup de turbo de 2,6 secondes.
 
 **Le boss.** À 25 étoiles s'ouvre *Le Monstre*, qui mélange les quatre
 compétences (reconnaître, entendre, compter, associer). Il a 5 crânes de vie,

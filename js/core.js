@@ -243,6 +243,7 @@ var App = (function () {
     seq++;   // tout ce que l'ancien jeu avait programmé devient caduc
     if (current && current.stop) { try { current.stop(); } catch (e) {} }
     current = null; currentId = null;
+    document.body.classList.remove('sans-prout');
     var root = document.getElementById('game-root');
     if (root) { root.innerHTML = ''; root.className = 'game-root'; }
     setDots(0, 0);
@@ -256,6 +257,12 @@ var App = (function () {
     show('screen-game');
     var root = document.getElementById('game-root');
     root.className = 'game-root theme-' + id;
+
+    // Certains jeux se pilotent au doigt sur TOUTE la surface : le bouton 💩,
+    // fixé en bas à droite, y masquait le kart et rendait ce coin insensible
+    // (il recouvrait même le bouton éponge du Tableau Magique). On l'efface
+    // le temps de la partie ; il revient au menu.
+    document.body.classList.toggle('sans-prout', !!g.pleinEcran);
 
     // chaque partie reçoit son propre "api" avec un alive() : les retours
     // de la synthèse vocale arrivent parfois après un changement d'écran.
