@@ -334,6 +334,28 @@ body::before {           /* ciel étoilé animé */
 /* jeux qui se pilotent au doigt sur toute la surface : le bouton gênerait */
 body.sans-prout .prout-btn { display: none; }
 
+/* ---------------- mode test (parents) ---------------- */
+.bandeau-test { display: none; }
+body.mode-test .bandeau-test {
+  display: flex; align-items: center; gap: 2vmin;
+  position: fixed; left: 2vmin; bottom: 2vmin; z-index: 70;
+  background: #ffb02e; color: #2b1d00;
+  border-radius: 999px; padding: 1vmin 2vmin 1vmin 3vmin;
+  font-size: 2.8vmin; font-weight: 900;
+  box-shadow: 0 1vmin 0 #00000055;
+}
+body.mode-test .bandeau-test button {
+  font-family: inherit; font-size: 2.6vmin; font-weight: 900;
+  border: none; border-radius: 999px; padding: .8vmin 2.4vmin;
+  background: #2b1d00; color: #ffe97a;
+}
+/* liseré permanent : impossible de croire qu'on joue pour de vrai */
+body.mode-test::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 65;
+  border: 0.8vmin solid #ffb02e;
+}
+.gate-num.actuel { box-shadow: 0 1vmin 0 #6b5ba3, 0 0 0 0.6vmin #7CFFB2; }
+
 /* ---------------- confettis & flash ---------------- */
 .confetti-layer { position: fixed; inset: 0; pointer-events: none; z-index: 90; overflow: hidden; }
 .confetti { position: absolute; top: -12vmin; animation: fall linear forwards; }

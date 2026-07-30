@@ -193,6 +193,28 @@ lire.
 
 ## 🧹 Réglages
 
+### 🧪 Mode test (pour les parents)
+
+Le bouton **🧪** du menu ouvre un mode pour **essayer les jeux sans toucher à
+la progression de l'enfant**. Il est protégé par la même multiplication que le
+balai, pour qu'il ne puisse pas l'activer par hasard.
+
+Dedans :
+- **tous les jeux sont ouverts**, même ceux qu'il n'a pas encore débloqués ;
+- on **choisit le niveau** avant de lancer (utile pour voir directement le
+  niveau 10 des Nombres ou le niveau 4 de la Course) ;
+- **rien n'est enregistré** : les étoiles montent à l'écran, les niveaux
+  changent, les autocollants tombent… mais la sauvegarde de la tablette n'est
+  pas touchée. En quittant, tout est relu depuis la sauvegarde et l'essai est
+  jeté d'un bloc.
+
+Un liseré orange entoure l'écran et un bandeau « MODE TEST » reste affiché en
+permanence : impossible de croire qu'on joue pour de vrai. Le mode **n'est pas
+mémorisé** — au prochain lancement on est de nouveau en jeu normal, pour qu'un
+mode test oublié ne prive jamais l'enfant de sa progression.
+
+### Le reste
+
 - **Effacer la progression** : le balai 🧹 en haut à droite du menu, puis une
   multiplication à résoudre — un enfant de 5 ans ne passe pas, un adulte oui.
 - **Faire répéter la consigne** : le bouton 🔁 en haut de chaque jeu, ou le

@@ -44,50 +44,36 @@
   /* --- remise à zéro : une multiplication barre la route aux enfants ---
      (l'appui long ne marchait pas : sur tablette il déclenche le menu
      contextuel du navigateur, qui envoie un pointercancel.) */
-  tap(document.getElementById('btn-reset'), function () { Sound.pop(); openGate(); });
-
-  function openGate() {
-    var a = 3 + Math.floor(Math.random() * 7);
-    var b = 3 + Math.floor(Math.random() * 7);
-    var bon = a * b;
-    var opts = [bon];
-    while (opts.length < 4) {
-      var v = bon + Math.floor(Math.random() * 13) - 6;
-      if (v > 0 && opts.indexOf(v) < 0) opts.push(v);
-    }
-
-    var ov = el('div', 'gate');
-    var box = el('div', 'gate-box');
-    box.appendChild(el('div', 'gate-title', '🧹 Tout effacer ?'));
-    box.appendChild(el('div', 'gate-sub',
-      'Étoiles, prouts et niveaux repartent à zéro.'));
-    box.appendChild(el('div', 'gate-q',
-      'Réservé aux grands : ' + a + ' × ' + b + ' = ?'));
-
-    var row = el('div', 'gate-opts');
-    shuffle(opts).forEach(function (v) {
-      var btn = el('button', 'gate-num', String(v));
-      tap(btn, function () {
-        if (v !== bon) { wiggle(btn); Sound.oops(); return; }
-        close();
+  tap(document.getElementById('btn-reset'), function () {
+    Sound.pop();
+    App.porteParentale('🧹 Tout effacer ?',
+      'Étoiles, prouts et niveaux repartent à zéro.',
+      function () {
         App.reset(); App.buildMenu();
         Sound.ballon();
         App.flash('Tout est effacé 🧹');
       });
-      row.appendChild(btn);
-    });
-    box.appendChild(row);
+  });
 
-    var cancel = el('button', 'gate-cancel', '❌ Annuler');
-    tap(cancel, function () { Sound.pop(); close(); });
-    box.appendChild(cancel);
+  /* --- mode test : essayer les jeux sans toucher aux scores de l'enfant --- */
+  tap(document.getElementById('btn-test'), function () {
+    Sound.pop();
+    App.porteParentale('🧪 Mode test',
+      'Pour essayer les jeux sans rien enregistrer. Tous les jeux sont ouverts et on choisit son niveau.',
+      function () {
+        App.setTest(true);
+        Sound.sparkle();
+        App.flash('🧪 Mode test activé', 'big');
+        Voice.say('Mode test ! Rien ne sera enregistré.', { coupe: true });
+      });
+  });
 
-    ov.appendChild(box);
-    tap(ov, function (e) { if (e.target === ov) close(); });
-    document.body.appendChild(ov);
-
-    function close() { if (ov.parentNode) ov.parentNode.removeChild(ov); }
-  }
+  tap(document.getElementById('btn-quitter-test'), function () {
+    Sound.pop();
+    App.setTest(false);
+    App.flash('Mode test terminé ✅');
+    Voice.say('Retour au jeu normal.', { coupe: true });
+  });
 
   /* --- évite le zoom/scroll parasite avec les doigts --- */
   document.addEventListener('gesturestart', function (e) { e.preventDefault(); });

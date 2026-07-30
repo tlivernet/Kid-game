@@ -36,6 +36,7 @@
     <div class="topbar-right">
       <button class="icon-btn" id="btn-missions" title="Mes missions">🎯</button>
       <button class="icon-btn" id="btn-album" title="Mes autocollants">🏅</button>
+      <button class="icon-btn" id="btn-test" title="Mode test (parents)">🧪</button>
       <button class="icon-btn" id="btn-reset" title="Tout effacer">🧹</button>
     </div>
   </header>
@@ -68,6 +69,13 @@
 
 <!-- Bouton prout universel : toujours accessible, c'est la soupape ! -->
 <button id="btn-prout" class="prout-btn" aria-label="Prout">💩</button>
+
+<!-- Bandeau du mode test : visible sur TOUS les écrans, pour qu'on n'oublie
+     jamais qu'on est en train d'essayer et que rien n'est enregistré. -->
+<div id="bandeau-test" class="bandeau-test">
+  <span>🧪 MODE TEST — rien n'est enregistré</span>
+  <button id="btn-quitter-test">Quitter</button>
+</div>
 
 <div id="confetti-layer" class="confetti-layer"></div>
 

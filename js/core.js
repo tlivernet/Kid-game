@@ -23,8 +23,8 @@ var App = (function () {
   function load() {
     try {
       var raw = localStorage.getItem(KEY);
-      if (raw) {
-        var s = JSON.parse(raw);
+      var s = raw ? JSON.parse(raw) : {};
+      {
         state.stars = s.stars || 0;
         state.proutons = s.proutons || 0;
         state.best = s.best || {};
@@ -39,6 +39,7 @@ var App = (function () {
     } catch (e) {}
   }
   function save() {
+    if (test) return;      // mode test : on ne touche pas à la sauvegarde
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
   }
   function reset() {
@@ -76,6 +77,7 @@ var App = (function () {
   /* ---------- déblocage des jeux ---------- */
   function unlocked(id) {
     var g = Games[id];
+    if (test) return true;      // en test, on veut pouvoir tout essayer
     return !g || !g.need || state.stars >= g.need;
   }
 
@@ -479,11 +481,77 @@ var App = (function () {
           return;
         }
         Sound.pop();
+        if (test && !g.salon) return choisirNiveau(id);
         Voice.say(g.spoken || g.title);
         play(id);
       });
       grid.appendChild(card);
     });
+  }
+
+  /* ==========================================================================
+     PORTE PARENTALE — une multiplication. Un enfant de 5 ans ne passe pas,
+     un adulte passe en deux secondes. Sert au balai (tout effacer) et au
+     mode test.
+     ========================================================================== */
+  function porteParentale(titre, sousTitre, siOk) {
+    var a = 3 + Math.floor(Math.random() * 7);
+    var b = 3 + Math.floor(Math.random() * 7);
+    var bon = a * b;
+    var opts = [bon];
+    while (opts.length < 4) {
+      var v = bon + Math.floor(Math.random() * 13) - 6;
+      if (v > 0 && opts.indexOf(v) < 0) opts.push(v);
+    }
+
+    var ov = el('div', 'gate');
+    var box = el('div', 'gate-box');
+    box.appendChild(el('div', 'gate-title', titre));
+    box.appendChild(el('div', 'gate-sub', sousTitre));
+    box.appendChild(el('div', 'gate-q', 'Réservé aux grands : ' + a + ' × ' + b + ' = ?'));
+
+    var row = el('div', 'gate-opts');
+    shuffle(opts).forEach(function (v) {
+      var btn = el('button', 'gate-num', String(v));
+      tap(btn, function () {
+        if (v !== bon) { wiggle(btn); Sound.oops(); return; }
+        fermer();
+        siOk();
+      });
+      row.appendChild(btn);
+    });
+    box.appendChild(row);
+
+    var annuler = el('button', 'gate-cancel', '❌ Annuler');
+    tap(annuler, function () { Sound.pop(); fermer(); });
+    box.appendChild(annuler);
+
+    ov.appendChild(box);
+    tap(ov, function (e) { if (e.target === ov) fermer(); });
+    document.body.appendChild(ov);
+    function fermer() { if (ov.parentNode) ov.parentNode.removeChild(ov); }
+  }
+
+  /* ==========================================================================
+     MODE TEST — pour que le parent essaie les jeux sans toucher aux scores
+     de l'enfant. Tout reste possible en mémoire (les étoiles montent à
+     l'écran, les niveaux changent), mais RIEN n'est écrit sur la tablette :
+     save() ne fait rien, et en sortant on relit simplement la sauvegarde,
+     ce qui jette d'un coup tout ce qui a été fait pendant l'essai.
+     Volontairement NON persistant : au prochain lancement on est de nouveau
+     en mode normal, pour qu'un mode test oublié ne prive pas l'enfant de sa
+     progression.
+     ========================================================================== */
+  var test = false;
+  function enTest() { return test; }
+
+  function setTest(on) {
+    test = !!on;
+    document.body.classList.toggle('mode-test', test);
+    if (!test) load();          // on jette tout ce qui a été fait en test
+    refreshScore();
+    buildMenu();
+    goMenu();
   }
 
   /* ---------- boutique : les proutons deviennent une monnaie ---------- */
@@ -495,6 +563,36 @@ var App = (function () {
     if (ref && state.achats.indexOf(ref) < 0) state.achats.push(ref);
     save(); refreshScore();
     return true;
+  }
+
+  /* En test, on choisit directement le niveau à essayer : sans ça il
+     faudrait gagner des parties pour atteindre le niveau qu'on veut voir. */
+  function choisirNiveau(id) {
+    var g = Games[id], max = maxLevel(id);
+    var ov = el('div', 'gate');
+    var box = el('div', 'gate-box');
+    box.appendChild(el('div', 'gate-title', g.emoji + ' ' + g.title));
+    box.appendChild(el('div', 'gate-sub', 'Quel niveau veux-tu essayer ?'));
+    var row = el('div', 'gate-opts');
+    for (var i = 1; i <= max; i++) {
+      (function (n) {
+        var btn = el('button', 'gate-num', String(n));
+        if (n === levelOf(id)) btn.classList.add('actuel');
+        tap(btn, function () {
+          if (ov.parentNode) ov.parentNode.removeChild(ov);
+          state.level[id] = n;
+          play(id);
+        });
+        row.appendChild(btn);
+      })(i);
+    }
+    box.appendChild(row);
+    var annuler = el('button', 'gate-cancel', '❌ Annuler');
+    tap(annuler, function () { Sound.pop(); if (ov.parentNode) ov.parentNode.removeChild(ov); });
+    box.appendChild(annuler);
+    ov.appendChild(box);
+    tap(ov, function (e) { if (e.target === ov && ov.parentNode) ov.parentNode.removeChild(ov); });
+    document.body.appendChild(ov);
   }
 
   /* ---------- album d'autocollants ---------- */
@@ -528,6 +626,7 @@ var App = (function () {
   return {
     load: load, save: save, reset: reset,
     unlocked: unlocked, openAlbum: openAlbum, giveSticker: giveSticker,
+    porteParentale: porteParentale, setTest: setTest, enTest: enTest,
     openMissions: openMissions, majMissions: majMissions,
     depenser: depenser, achete: achete,
     goMenu: goMenu, play: play, replay: replay,
