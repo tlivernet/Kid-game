@@ -60,7 +60,7 @@ fichier audio à télécharger).
 | ✍️ **Tableau Magique** | Tracer la lettre au doigt en suivant le chemin | Geste d'écriture, sens du tracé |
 | 🕵️ **Le Détective** | « Par quelle lettre commence PIZZA ? » puis le mot s'écrit | **Relier un son entendu à une lettre** |
 | 🚀 **Fusée Alphabet** | Toucher les lettres dans l'ordre ; la fusée se pose sur chaque bulle comme sur une planète | L'ordre de l'alphabet |
-| 🏎️ **La Course des Lettres** | Un kart en fausse 3D : attraper les lettres dans l'ordre en changeant de voie | Ordre de l'alphabet, puis **épeler un mot** |
+| 🏎️ **La Course des Lettres** | Un kart en fausse 3D, vu de dos, sur une route qui serpente : attraper les lettres dans l'ordre | Ordre de l'alphabet, puis **épeler un mot** |
 | 👹 **Le Monstre** | Combat de boss : tout y passe, avec 3 vies et un chrono | Révision mélangée sous tension |
 | 💩 **Boutique** | Dépenser ses proutons en bruits rigolos et en autocollants | (rien — c'est la récompense !) |
 
@@ -206,7 +206,9 @@ lire.
   **Aucun « è » dans ces graphies** : les voix des tablettes le prononcent
   littéralement (« èffe » devenait « e-accent-grave-f-f-e ») ou le confondent
   avec « é ». On passe donc par de vrais mots homophones — *elle, aime, aine,
-  erre, esse* — impossibles à écorcher.
+  erre, esse* — impossibles à écorcher. Même règle pour le Q : « ku » puis
+  « cu » se faisaient épeler « cé-u », faute d'être des mots ; seul « cul »
+  (L muet) donne le /ky/ attendu.
 - Les phrases passent par une **file d'attente** (`Voice.say`). Auparavant
   chaque phrase annulait la précédente, et le « bravo » de fin de partie se
   faisait couper par l'annonce suivante. Pour interrompre volontairement

@@ -156,19 +156,70 @@ Games.fusee = (function () {
     } });
   }
 
+  /* Le décollage : c'est la récompense du jeu, elle mérite mieux qu'une
+     fusée qui glisse hors de l'écran. Compte à rebours, flammes qui
+     grossissent, écran qui tremble, puis départ dans les étoiles. */
   function gagne() {
     over = true;
-    api.confetti(40);
-    Sound.fanfare();
-    rocket.classList.add('decolle');
-    Voice.say('Décollage ! Tu connais ton alphabet !', {
-      then: function () {
+    var W = zone.clientWidth, H = zone.clientHeight;
+
+    // on efface les bulles : la fusée doit être seule en piste
+    zone.classList.add('lancement');
+    // la fusée rejoint le pas de tir, bien droite
+    rocket.classList.add('surRampe');
+    rocket.style.left = (W * 0.5) + 'px';
+    rocket.style.top = (H * 0.66) + 'px';
+
+    var flamme = el('div', 'flamme', '🔥');
+    zone.appendChild(flamme);
+    function placerFlamme() {
+      flamme.style.left = rocket.style.left;
+      flamme.style.top = (parseFloat(rocket.style.top) + H * 0.1) + 'px';
+    }
+    placerFlamme();
+
+    var compteur = el('div', 'compte-rebours');
+    zone.appendChild(compteur);
+
+    var etapes = ['3', '2', '1'];
+    var i = 0;
+    (function tic() {
+      if (!api.alive()) return;
+      if (i < etapes.length) {
+        compteur.textContent = etapes[i];
+        compteur.classList.remove('bat'); void compteur.offsetWidth;
+        compteur.classList.add('bat');
+        Sound.note(300 + i * 120, 0, 0.22, 'square', 0.28);
+        Voice.say(['trois', 'deux', 'un'][i], { coupe: true });
+        i++;
+        setTimeout(tic, 800);
+        return;
+      }
+      // ---- allumage ----
+      compteur.textContent = 'DÉCOLLAGE !';
+      compteur.classList.add('go');
+      flamme.classList.add('allumee');
+      zone.classList.add('tremble');
+      Sound.fanfare();
+      Sound.prout(1.2);                 // le carburant, forcément
+      api.confetti(60);
+      Voice.say('Décollage ! Tu connais ton alphabet !');
+
+      setTimeout(function () {
+        if (!api.alive()) return;
+        rocket.classList.add('decolle');
+        flamme.classList.add('decolle');
+        zone.classList.add('vitesse');   // traînées d'étoiles
+        Sound.ballon();
+      }, 700);
+
+      setTimeout(function () {
         if (!api.alive()) return;
         var stars = erreurs === 0 ? 3 : (erreurs <= 3 ? 2 : 1);
         api.bumpLevel('fusee', erreurs <= 1);
         api.win(stars, '🚀');
-      }
-    });
+      }, 2600);
+    })();
   }
 
   function repeat() {

@@ -495,10 +495,62 @@ body::before {           /* ciel étoilé animé */
   40% { transform: translate(-50%, -40%) rotate(-18deg) scaleY(.82); }
   70% { transform: translate(-50%, -54%) rotate(-18deg) scaleY(1.05); }
 }
-.rocket.decolle { animation: decolle 1.4s ease forwards; }
-@keyframes decolle {
-  to { transform: translate(-50%, -900%) rotate(-18deg) scale(.4); opacity: 0; }
+.rocket.surRampe {
+  /* l'emoji fusée pointe naturellement en diagonale : -45° le redresse
+     à la verticale, comme sur un vrai pas de tir */
+  transform: translate(-50%, -50%) rotate(-45deg);
+  transition: left .5s ease, top .5s ease, transform .5s ease;
 }
+.rocket.decolle { animation: decolle 1.6s cubic-bezier(.6,0,.9,.4) forwards; }
+@keyframes decolle {
+  30% { transform: translate(-50%, -70%) rotate(-45deg) scale(1.05); }
+  to  { transform: translate(-50%, -900%) rotate(-45deg) scale(.35); opacity: 0; }
+}
+
+/* --- le décollage : compte à rebours, flammes, secousse, étoiles filantes --- */
+.flamme {
+  position: absolute; transform: translate(-50%, -50%) scaleY(.3);
+  font-size: 9vmin; line-height: 1; opacity: 0; pointer-events: none;
+  transition: opacity .2s;
+}
+.flamme.allumee { opacity: 1; animation: flamme .18s ease-in-out infinite alternate; }
+@keyframes flamme {
+  to { transform: translate(-50%, -45%) scaleY(1.15) scaleX(1.1); }
+}
+.flamme.decolle { animation: decolle 1.6s cubic-bezier(.6,0,.9,.4) forwards; }
+
+.compte-rebours {
+  position: absolute; left: 50%; top: 16%; transform: translate(-50%, -50%);
+  font-size: 16vmin; font-weight: 900; color: #ffe97a;
+  text-shadow: 0 0 4vmin #ff8a00; pointer-events: none; z-index: 5;
+  white-space: nowrap;
+}
+.compte-rebours.bat { animation: cr 0.8s ease; }
+@keyframes cr {
+  0% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
+  25% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%,-50%) scale(.9); opacity: .85; }
+}
+.compte-rebours.go { font-size: 7.5vmin; color: #7CFFB2; text-shadow: 0 0 4vmin #7CFFB2; }
+
+/* pendant le décollage, la scène se vide : la fusée doit être seule en piste */
+.fusee-zone.lancement .star-letter,
+.fusee-zone.lancement canvas { opacity: 0; transition: opacity .5s; }
+
+.fusee-zone.tremble { animation: tremble .12s linear 14; }
+@keyframes tremble {
+  25% { transform: translate(-0.6vmin, 0.4vmin); }
+  75% { transform: translate(0.6vmin, -0.4vmin); }
+}
+/* traînées d'étoiles : fines et rapides, sinon on dirait une portée de musique */
+.fusee-zone.vitesse::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(180deg,
+    #ffffff00 0 6vmin, #ffffff66 6vmin 6.5vmin, #ffffff00 6.5vmin 14vmin);
+  animation: filantes .28s linear infinite;
+  opacity: .5;
+}
+@keyframes filantes { to { background-position-y: 14vmin; } }
 
 /* ---------------- Le Monstre (boss) ---------------- */
 .boss-scene {

@@ -14,6 +14,7 @@ Games.course = (function () {
   var root, api, level, cvs, ctx, W, H, dpr, horizon;
   var items, suite, idx, voie, voieCible, kartX, vitesse, raf, last;
   var coeurs, over, spawnT, motActuel;
+  var courbe, courbeCible, prochainVirage, parcouru;
 
   function config(lv) {
     if (lv <= 1) return { n: 5, mot: false, vitesse: 0.24, tempo: 1250, casing: 'upper' };
@@ -44,6 +45,7 @@ Games.course = (function () {
 
     idx = 0; items = []; voie = 1; voieCible = 1; kartX = 0.5;
     vitesse = cfg.vitesse; spawnT = 0;
+    courbe = 0; courbeCible = 0; prochainVirage = 2.5; parcouru = 0;
 
     root.innerHTML =
       '<div class="kart-bandeau">' +
@@ -103,8 +105,19 @@ Games.course = (function () {
   function ech(z) { return 1 / (1 + z * 6); }
   function ligneY(z) { return horizon + (H - horizon) * ech(z); }
   function demiRoute(z) { return W * 0.52 * ech(z); }
+
+  /* Le virage : plus c'est loin, plus c'est décalé sur le côté. Au premier
+     plan le décalage est nul, donc le kart n'a pas à corriger sa
+     trajectoire — la route tourne, le pilote reste au milieu de sa voie.
+     C'est ce que font tous les vieux jeux de course en fausse 3D, et c'est
+     ce qui donne l'impression de rouler sans compliquer le pilotage. */
+  function decal(z) {
+    var t = 1 - ech(z);
+    return courbe * W * t * t;
+  }
+  function centre(z) { return W / 2 + decal(z); }
   function voieX(v, z) {
-    return W / 2 + (v - (VOIES - 1) / 2) * (demiRoute(z) * 2 / VOIES) * 0.92;
+    return centre(z) + (v - (VOIES - 1) / 2) * (demiRoute(z) * 2 / VOIES) * 0.92;
   }
 
   /* ---------- pilotage ---------- */
@@ -121,6 +134,16 @@ Games.course = (function () {
     if (over || !ctx) return;
     var dt = Math.min(0.05, (now - last) / 1000);
     last = now;
+
+    // la route serpente : on change de virage toutes les quelques secondes
+    parcouru += dt;
+    if (parcouru > prochainVirage) {
+      parcouru = 0;
+      prochainVirage = 2.5 + Math.random() * 3;
+      courbeCible = (Math.random() * 2 - 1) * 0.33;
+      if (Math.random() < 0.25) courbeCible = 0;      // parfois une ligne droite
+    }
+    courbe += (courbeCible - courbe) * Math.min(1, dt * 0.9);
 
     // le kart glisse vers la voie visée
     var cible = voieCible / (VOIES - 1);
@@ -249,10 +272,10 @@ Games.course = (function () {
     // route
     ctx.fillStyle = '#3a3560';
     ctx.beginPath();
-    ctx.moveTo(W / 2 - demiRoute(1), ligneY(1));
-    ctx.lineTo(W / 2 + demiRoute(1), ligneY(1));
-    ctx.lineTo(W / 2 + demiRoute(0), ligneY(0));
-    ctx.lineTo(W / 2 - demiRoute(0), ligneY(0));
+    var pas = 0.02, zz2;
+    ctx.moveTo(centre(1) - demiRoute(1), ligneY(1));
+    for (zz2 = 1; zz2 >= 0; zz2 -= pas) ctx.lineTo(centre(zz2) - demiRoute(zz2), ligneY(zz2));
+    for (zz2 = 0; zz2 <= 1; zz2 += pas) ctx.lineTo(centre(zz2) + demiRoute(zz2), ligneY(zz2));
     ctx.closePath();
     ctx.fill();
 
@@ -263,23 +286,25 @@ Games.course = (function () {
       if (zz <= 0.02 || zz > 1) continue;
       var claire = Math.floor((zz + defile) / 0.1) % 2 === 0;
       var y1 = ligneY(zz), y2 = ligneY(Math.max(0.02, zz - 0.05));
+      var zb = Math.max(0.02, zz - 0.05);
+      var c1 = centre(zz), c2 = centre(zb);
       ctx.fillStyle = claire ? '#ffffff12' : '#00000018';
       ctx.beginPath();
-      ctx.moveTo(W / 2 - demiRoute(zz), y1);
-      ctx.lineTo(W / 2 + demiRoute(zz), y1);
-      ctx.lineTo(W / 2 + demiRoute(Math.max(0.02, zz - 0.05)), y2);
-      ctx.lineTo(W / 2 - demiRoute(Math.max(0.02, zz - 0.05)), y2);
+      ctx.moveTo(c1 - demiRoute(zz), y1);
+      ctx.lineTo(c1 + demiRoute(zz), y1);
+      ctx.lineTo(c2 + demiRoute(zb), y2);
+      ctx.lineTo(c2 - demiRoute(zb), y2);
       ctx.closePath();
       ctx.fill();
       // bordures rouge/blanc
       ctx.fillStyle = claire ? '#ff4d6d' : '#ffffff';
-      var e1 = demiRoute(zz) * 0.09, e2 = demiRoute(Math.max(0.02, zz - 0.05)) * 0.09;
+      var e1 = demiRoute(zz) * 0.09, e2 = demiRoute(zb) * 0.09;
       [-1, 1].forEach(function (c) {
         ctx.beginPath();
-        ctx.moveTo(W / 2 + c * demiRoute(zz), y1);
-        ctx.lineTo(W / 2 + c * (demiRoute(zz) + e1), y1);
-        ctx.lineTo(W / 2 + c * (demiRoute(Math.max(0.02, zz - 0.05)) + e2), y2);
-        ctx.lineTo(W / 2 + c * demiRoute(Math.max(0.02, zz - 0.05)), y2);
+        ctx.moveTo(c1 + c * demiRoute(zz), y1);
+        ctx.lineTo(c1 + c * (demiRoute(zz) + e1), y1);
+        ctx.lineTo(c2 + c * (demiRoute(zb) + e2), y2);
+        ctx.lineTo(c2 + c * demiRoute(zb), y2);
         ctx.closePath();
         ctx.fill();
       });
@@ -290,8 +315,10 @@ Games.course = (function () {
     ctx.lineWidth = Math.max(1, W * 0.004);
     for (var v = 1; v < VOIES; v++) {
       ctx.beginPath();
-      ctx.moveTo(W / 2 + (v - VOIES / 2) * (demiRoute(1) * 2 / VOIES), ligneY(1));
-      ctx.lineTo(W / 2 + (v - VOIES / 2) * (demiRoute(0) * 2 / VOIES), ligneY(0));
+      for (var zs = 1; zs >= 0; zs -= 0.04) {
+        var xs = centre(zs) + (v - VOIES / 2) * (demiRoute(zs) * 2 / VOIES);
+        if (zs === 1) ctx.moveTo(xs, ligneY(zs)); else ctx.lineTo(xs, ligneY(zs));
+      }
       ctx.stroke();
     }
 
@@ -318,16 +345,84 @@ Games.course = (function () {
     // voies des lettres, sinon il roule à côté de la voie qu'il croit
     // occuper et les collisions paraissent injustes.
     var vf = kartX * (VOIES - 1);
-    var kx = W / 2 + (vf - (VOIES - 1) / 2) * (demiRoute(0) * 2 / VOIES) * 0.92;
-    var taille = W * 0.17;
-    var ky = H - taille * 0.62;   // posé au sol, jamais rogné par le bas
+    var kx = voieX(vf, 0);
+    var taille = W * 0.20;
+    var ky = H - taille * 0.42;
+    dessinerKart(kx, ky, taille, (voieCible / (VOIES - 1) - kartX));
+  }
+
+  /* Le kart VU DE DOS, dessiné plutôt qu'emprunté à un emoji : les emojis
+     de voiture sont tous de profil, ce qui casse la perspective. Ici on
+     voit l'arrière — aileron, feux, deux grosses roues — et il s'incline
+     quand on change de voie. */
+  function dessinerKart(x, y, t, penche) {
+    var L = t * 0.5;                 // demi-largeur
     ctx.save();
-    ctx.translate(kx, ky);
-    ctx.rotate((voieCible / (VOIES - 1) - kartX) * 0.5);   // il penche dans le virage
-    ctx.font = taille + 'px system-ui';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('🏎️', 0, 0);
+    ctx.translate(x, y);
+    ctx.rotate(penche * 0.18);
+    ctx.scale(1 - Math.abs(penche) * 0.12, 1);   // il se présente de trois quarts
+
+    // ombre au sol
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(0, t * 0.20, L * 1.05, t * 0.09, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // roues arrière
+    ctx.fillStyle = '#15121f';
+    arrondi(-L * 1.02, -t * 0.16, L * 0.42, t * 0.36, t * 0.07);
+    arrondi(L * 0.60, -t * 0.16, L * 0.42, t * 0.36, t * 0.07);
+    ctx.fillStyle = '#4a4560';       // jantes
+    arrondi(-L * 0.94, -t * 0.06, L * 0.26, t * 0.14, t * 0.04);
+    arrondi(L * 0.68, -t * 0.06, L * 0.26, t * 0.14, t * 0.04);
+
+    // carrosserie (plus large en bas : on la voit de derrière)
+    var g = ctx.createLinearGradient(0, -t * 0.3, 0, t * 0.2);
+    g.addColorStop(0, '#ff6b6b');
+    g.addColorStop(1, '#c81d2e');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(-L * 0.72, t * 0.2);
+    ctx.lineTo(L * 0.72, t * 0.2);
+    ctx.lineTo(L * 0.52, -t * 0.26);
+    ctx.lineTo(-L * 0.52, -t * 0.26);
+    ctx.closePath();
+    ctx.fill();
+
+    // casque du pilote
+    ctx.fillStyle = '#ffe97a';
+    ctx.beginPath();
+    ctx.arc(0, -t * 0.30, t * 0.13, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#2b1d00';
+    ctx.beginPath();
+    ctx.arc(0, -t * 0.30, t * 0.13, Math.PI * 1.15, Math.PI * 1.85);
+    ctx.fill();
+
+    // aileron
+    ctx.fillStyle = '#1f1b33';
+    arrondi(-L * 0.86, -t * 0.50, L * 1.72, t * 0.10, t * 0.03);
+    ctx.fillStyle = '#ff4d6d';
+    arrondi(-L * 0.30, -t * 0.44, L * 0.60, t * 0.16, t * 0.02);
+
+    // feux arrière
+    ctx.fillStyle = '#ff2d55';
+    arrondi(-L * 0.55, 0, L * 0.26, t * 0.09, t * 0.03);
+    arrondi(L * 0.29, 0, L * 0.26, t * 0.09, t * 0.03);
     ctx.restore();
+  }
+
+  function arrondi(x, y, w, h, r) {
+    ctx.beginPath();
+    if (ctx.roundRect) { ctx.roundRect(x, y, w, h, r); }
+    else {
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+    }
+    ctx.fill();
   }
 
   /* ---------- fin ---------- */

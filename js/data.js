@@ -10,12 +10,18 @@
    (« èrre » sonnait « érre »). Le « é », lui, passe très bien.
    On utilise donc de vrais mots français homophones du nom de la lettre :
    elle, aime, aine, erre, esse — impossibles à écorcher.
-   Et « cu » plutôt que « ku » pour Q : en orthographe française « cu » se lit
-   /ky/ comme dans « cube », alors que « ku » risquait de sonner « cou ». */
+
+   Le Q est le cas le plus retors. « ku » puis « cu » ont été essayés : la
+   voix ne les reconnaît pas comme des mots et les ÉPELLE (« cé-u »). Il lui
+   faut un vrai mot, et le seul qui se prononce exactement /ky/ en français
+   est « cul », dont le L est muet. C'est le son juste du nom de la lettre,
+   ni plus ni moins — et dans un jeu qui compte en proutons, l'orthographe
+   du fichier ne choquera personne. Si la voix de la tablette prononçait le
+   L, remplacer ici par 'Q' tout court. */
 var LETTER_SAY = {
   A: 'A', B: 'Bé', C: 'Cé', D: 'Dé', E: 'euh', F: 'effe', G: 'Gé',
   H: 'hache', I: 'i', J: 'ji', K: 'ka', L: 'elle', M: 'aime', N: 'aine',
-  O: 'o', P: 'pé', Q: 'cu', R: 'erre', S: 'esse', T: 'té', U: 'u',
+  O: 'o', P: 'pé', Q: 'cul', R: 'erre', S: 'esse', T: 'té', U: 'u',
   V: 'vé', W: 'double vé', X: 'ixe', Y: 'i grec', Z: 'zed'
 };
 
